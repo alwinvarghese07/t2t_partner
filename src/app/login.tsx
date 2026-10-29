@@ -90,18 +90,9 @@ export default function LoginScreen() {
       return;
     }
 
-    // Mark partner authenticated in portal store
+    // Mark partner authenticated in portal store and navigate straight to Home
     setIsAuthenticated(true);
-
-    showBottomSheet({
-      title: 'Verification Successful!',
-      message: `Identity confirmed for ${email}. Welcome to Trip2Tirupati Partner Operations.`,
-      icon: 'success',
-      primaryButtonText: 'Open Dashboard',
-      onPrimaryPress: () => {
-        router.replace('/(tabs)');
-      }
-    });
+    router.replace('/(tabs)');
   };
 
   const handleResendOtp = () => {
