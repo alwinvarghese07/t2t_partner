@@ -201,10 +201,10 @@ export default function LoginScreen() {
               ) : (
                 <>
                   <Text style={styles.blockHeading}>
-                    Security{'\n'}Verification
+                    Security Verification
                   </Text>
                   <Text style={styles.blockSubheading}>
-                    Enter the 6-digit OTP code sent to your registered partner email
+                    Enter the 6-digit OTP code sent to {email || 'your registered partner email'}
                   </Text>
                 </>
               )}
@@ -351,36 +351,6 @@ export default function LoginScreen() {
             ) : (
               /* ================= OTP VERIFICATION STEP ================= */
               <>
-                {/* 2-Step Verification Header Pill */}
-                <View style={styles.otpBadgeContainer}>
-                  <View style={styles.otpBadge}>
-                    <Ionicons name="shield-checkmark" size={14} color="#111318" />
-                    <Text style={styles.otpBadgeText}>2-Step Security Verification</Text>
-                  </View>
-                </View>
-
-                {/* Recipient Info Card with Quick Change button */}
-                <View style={styles.otpRecipientCard}>
-                  <View style={styles.otpRecipientLeft}>
-                    <View style={styles.otpRecipientIconBox}>
-                      <Ionicons name="mail" size={18} color="#111318" />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.otpRecipientLabel}>Code Sent To</Text>
-                      <Text style={styles.otpRecipientEmail} numberOfLines={1}>
-                        {email || 'partner@trip2tirupati.com'}
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.otpChangeBtn}
-                    onPress={() => setStep('credentials')}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.otpChangeBtnText}>Change</Text>
-                  </TouchableOpacity>
-                </View>
-
                 {/* Prompt Instruction */}
                 <Text style={styles.otpInstructionText}>
                   Please enter the 6-digit verification code below:
@@ -696,87 +666,12 @@ const styles = StyleSheet.create({
   },
 
   /* ===== OTP SPECIFIC STYLES ===== */
-  otpBadgeContainer: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  otpBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#f1f5f9',
-    paddingVertical: 5,
-    paddingHorizontal: 11,
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  otpBadgeText: {
-    fontSize: 11.5,
-    fontFamily: Fonts.semiBold,
-    color: '#111318',
-  },
-  otpRecipientCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#f8fafc',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 14,
-  },
-  otpRecipientLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
-    marginRight: 8,
-  },
-  otpRecipientIconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  otpRecipientLabel: {
-    fontSize: 10.5,
-    fontFamily: Fonts.medium,
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
-  },
-  otpRecipientEmail: {
-    fontSize: 12.5,
-    fontFamily: Fonts.semiBold,
-    color: '#111318',
-    marginTop: 1,
-  },
-  otpChangeBtn: {
-    paddingVertical: 5,
-    paddingHorizontal: 9,
-    borderRadius: 7,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#111318',
-  },
-  otpChangeBtnText: {
-    fontSize: 11,
-    fontFamily: Fonts.semiBold,
-    color: '#111318',
-  },
   otpInstructionText: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontFamily: Fonts.medium,
     color: '#64748b',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   otpBoxesWrapper: {
     position: 'relative',
