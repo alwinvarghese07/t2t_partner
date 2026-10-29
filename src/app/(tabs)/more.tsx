@@ -343,10 +343,12 @@ export default function MoreScreen() {
           style={styles.signOutBtn}
           onPress={() =>
             showBottomSheet({
-              title: 'Partner Session',
-              message: 'You are signed into Annamaiah Guest House Tirupati as Partner (ID: AP-8160).',
-              icon: 'user',
-              primaryButtonText: 'Stay Signed In'
+              title: 'Sign Out Confirmation',
+              message: 'Are you sure you want to sign out from Annamaiah Guest House (Partner ID: AP-8160)?',
+              icon: 'warning',
+              primaryButtonText: 'Sign Out',
+              onPrimaryPress: () => router.replace('/login'),
+              secondaryButtonText: 'Stay Signed In'
             })
           }
           activeOpacity={0.8}

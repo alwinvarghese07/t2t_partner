@@ -21,7 +21,6 @@ import Svg, {
   Line,
   LinearGradient,
   Path,
-  Rect,
   Stop,
   Text as SvgText
 } from 'react-native-svg';
@@ -393,15 +392,7 @@ export default function DashboardScreen() {
                   return (
                     <G key={`text-${item.id}`}>
                       {/* Black squircle badge like in the reference image */}
-                      <Rect
-                        x={item.badgeX}
-                        y={item.badgeY}
-                        width={39}
-                        height={28}
-                        rx={8}
-                        ry={8}
-                        fill="#111318"
-                      />
+
                       <SvgText
                         x={item.textX}
                         y={item.textY}
