@@ -105,42 +105,6 @@ export default function CatalogScreen() {
                 </Text>
               </View>
             </View>
-
-            {/* 3 Circular Action Buttons */}
-            <View style={styles.heroActionButtonsRow}>
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => setActiveSegment('Inventory')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="bed-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Units</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => setActiveSegment('Packages')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="sparkles-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Packages</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => setActiveSegment('Rate Cards')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="flash-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Surge</Text>
-              </View>
-            </View>
           </View>
         </View>
 

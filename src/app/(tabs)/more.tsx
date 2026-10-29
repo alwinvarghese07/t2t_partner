@@ -98,17 +98,17 @@ export default function MoreScreen() {
                 style={styles.circleActionButton}
                 onPress={() =>
                   showBottomSheet({
-                    title: 'Roles & Access Privileges',
-                    message: 'Administrator tier active with full ledger settlement, real-time reservations, and inventory override permissions.',
-                    icon: 'security',
-                    primaryButtonText: 'Done'
+                    title: 'Operating Schedule',
+                    message: 'Daily Check-in: 12:00 PM\nDaily Check-out: 11:00 AM\n24/7 Guest Access & Immediate Room Allotment enabled.',
+                    icon: 'info',
+                    primaryButtonText: 'Got It'
                   })
                 }
                 activeOpacity={0.85}
               >
-                <Ionicons name="shield-checkmark" size={20} color="#ffffff" />
+                <Ionicons name="time" size={20} color="#ffffff" />
               </TouchableOpacity>
-              <Text style={styles.actionColLabel}>Security</Text>
+              <Text style={styles.actionColLabel}>Hours</Text>
             </View>
 
             <View style={styles.actionCol}>
@@ -116,8 +116,8 @@ export default function MoreScreen() {
                 style={styles.circleActionButton}
                 onPress={() =>
                   showBottomSheet({
-                    title: 'Trip2Tirupati Partner Desk',
-                    message: '24x7 Dedicated Pilgrim Partner Support:\n📞 +91 877 222 5555\n✉️ partner-support@trip2tirupati.com',
+                    title: 'Trip2Tirupati Partner Support',
+                    message: '24x7 Dedicated Partner Support:\n📞 +91 877 222 5555\n✉️ partner-support@trip2tirupati.com',
                     icon: 'info',
                     primaryButtonText: 'Contact Support'
                   })
@@ -149,14 +149,14 @@ export default function MoreScreen() {
           <View style={styles.twinCard}>
             <View style={styles.twinHeaderRow}>
               <View style={[styles.twinIconBox, { backgroundColor: '#f0fdf4' }]}>
-                <Ionicons name="finger-print-outline" size={15} color="#16a34a" />
+                <Ionicons name="phone-portrait-outline" size={15} color="#16a34a" />
               </View>
               <View style={[styles.miniStatusPill, { backgroundColor: '#f0fdf4' }]}>
                 <Text style={[styles.miniStatusText, { color: '#16a34a' }]}>Active</Text>
               </View>
             </View>
             <Text style={styles.twinCategory}>ACTIVE SESSION</Text>
-            <Text style={styles.twinValue}>Desk Terminal #1</Text>
+            <Text style={styles.twinValue}>Partner Mobile App</Text>
           </View>
         </View>
 
@@ -185,8 +185,8 @@ export default function MoreScreen() {
           <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
         </TouchableOpacity>
 
-        {/* Section: Operations & Inventory */}
-        <Text style={styles.sectionHeading}>OPERATIONS & CATALOG</Text>
+        {/* Section: Operations & Tariffs */}
+        <Text style={styles.sectionHeading}>DAILY OPERATIONS & TARIFFS</Text>
         <View style={styles.groupedCard}>
           <TouchableOpacity
             style={styles.groupedRow}
@@ -195,11 +195,11 @@ export default function MoreScreen() {
           >
             <View style={styles.rowLeft}>
               <View style={[styles.rowIconCircle, { backgroundColor: '#fef3c7' }]}>
-                <Ionicons name="flash-outline" size={18} color="#d97706" />
+                <Ionicons name="bed-outline" size={18} color="#d97706" />
               </View>
               <View>
-                <Text style={styles.rowTitle}>Room Attributes & Tariffs</Text>
-                <Text style={styles.rowSubtitle}>Dynamic pricing, surge rules & amenities</Text>
+                <Text style={styles.rowTitle}>Room Rates & Availability</Text>
+                <Text style={styles.rowSubtitle}>Manage pricing, active inventory & tariffs</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -211,10 +211,36 @@ export default function MoreScreen() {
             style={styles.groupedRow}
             onPress={() =>
               showBottomSheet({
-                title: 'Branch Coordinates & GPS',
-                message: 'Near RTC Central Bus Stand, Tirupati (13.6521° N, 79.3872° E)\nGeofenced for automatic devotee check-in alerts upon arrival.',
+                title: 'Check-in & Service Timings',
+                message: 'Standard Check-in: 12:00 PM\nStandard Check-out: 11:00 AM\n24/7 Guest Key Handover & Arrival Support.',
+                icon: 'info',
+                primaryButtonText: 'Understood'
+              })
+            }
+            activeOpacity={0.7}
+          >
+            <View style={styles.rowLeft}>
+              <View style={[styles.rowIconCircle, { backgroundColor: '#eff6ff' }]}>
+                <Ionicons name="time-outline" size={18} color="#2563eb" />
+              </View>
+              <View>
+                <Text style={styles.rowTitle}>Check-in & Service Schedule</Text>
+                <Text style={styles.rowSubtitle}>12:00 PM check-in · 11:00 AM check-out</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <TouchableOpacity
+            style={styles.groupedRow}
+            onPress={() =>
+              showBottomSheet({
+                title: 'Branch Location & GPS',
+                message: 'Near RTC Central Bus Stand, Tirupati (13.6521° N, 79.3872° E)\nDirect road access for arriving pilgrims and taxis.',
                 icon: 'location',
-                primaryButtonText: 'Got it'
+                primaryButtonText: 'Got It'
               })
             }
             activeOpacity={0.7}
@@ -224,96 +250,17 @@ export default function MoreScreen() {
                 <Ionicons name="navigate-circle-outline" size={18} color="#16a34a" />
               </View>
               <View>
-                <Text style={styles.rowTitle}>Branch Coordinates & GPS</Text>
-                <Text style={styles.rowSubtitle}>RTC Bus Stand Hub • Geofenced</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity
-            style={styles.groupedRow}
-            onPress={() =>
-              showBottomSheet({
-                title: 'Transit Provider Network',
-                message: 'Integrated with 45+ verified Tirupati pilgrim transit providers and taxi operators for Tirumala Hill Ghat trips.',
-                icon: 'link',
-                primaryButtonText: 'Done'
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#f5f3ff' }]}>
-                <Ionicons name="hand-left-outline" size={18} color="#7c3aed" />
-              </View>
-              <View>
-                <Text style={styles.rowTitle}>Transit & Taxi Provider Network</Text>
-                <Text style={styles.rowSubtitle}>Tirupati Airport & Railway Station link</Text>
+                <Text style={styles.rowTitle}>Location & Directions</Text>
+                <Text style={styles.rowSubtitle}>Near RTC Central Bus Stand · Geofenced</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
           </TouchableOpacity>
         </View>
 
-        {/* Section: Pilgrim Destination & Guides */}
-        <Text style={styles.sectionHeading}>DESTINATION & PILGRIM GUIDE</Text>
+        {/* Section: Alerts & Pilgrim Info */}
+        <Text style={styles.sectionHeading}>ALERTS & PILGRIM INFO</Text>
         <View style={styles.groupedCard}>
-          <TouchableOpacity
-            style={styles.groupedRow}
-            onPress={() =>
-              showBottomSheet({
-                title: 'Sacred Temples & Darshan Guide',
-                message: 'Sri Venkateswara Swamy Temple (Tirumala)\nOpen: 03:00 AM - 11:30 PM\nDistance: 22 km via First Ghat Road.\nPadmavathi Ammavari Temple: 5 km.',
-                icon: 'location',
-                primaryButtonText: 'Great'
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#fff7ed' }]}>
-                <Ionicons name="sparkles-outline" size={18} color="#ea580c" />
-              </View>
-              <View>
-                <Text style={styles.rowTitle}>Sacred Temples & Timings</Text>
-                <Text style={styles.rowSubtitle}>Tirumala, Padmavathi Ammavari, Govindaraja</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity
-            style={styles.groupedRow}
-            onPress={() =>
-              showBottomSheet({
-                title: 'Pilgrim Darshan Itineraries',
-                message: 'Pre-configured 1-Day, 2-Day, and 3-Day Tirupati pilgrim circuits available for hotel guests with verified taxi packages.',
-                icon: 'booking',
-                primaryButtonText: 'View Packages',
-                onPrimaryPress: () => router.push('/(tabs)/catalog')
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#f0f9ff' }]}>
-                <Ionicons name="compass-outline" size={18} color="#0284c7" />
-              </View>
-              <View>
-                <Text style={styles.rowTitle}>Pilgrim Darshan Itineraries</Text>
-                <Text style={styles.rowSubtitle}>1-Day & 2-Day temple visit routes</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
           <TouchableOpacity
             style={styles.groupedRow}
             onPress={() => router.push('/notifications')}
@@ -324,8 +271,8 @@ export default function MoreScreen() {
                 <Ionicons name="notifications-outline" size={18} color="#0284c7" />
               </View>
               <View>
-                <Text style={styles.rowTitle}>Notification Stream</Text>
-                <Text style={styles.rowSubtitle}>Real-time activity and booking alerts</Text>
+                <Text style={styles.rowTitle}>Notifications & Alerts</Text>
+                <Text style={styles.rowSubtitle}>Reservation notices and updates</Text>
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -337,34 +284,6 @@ export default function MoreScreen() {
               <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
             </View>
           </TouchableOpacity>
-        </View>
-
-        {/* Section: Staff & Permissions */}
-        <Text style={styles.sectionHeading}>TEAM & GOVERNANCE</Text>
-        <View style={styles.groupedCard}>
-          <TouchableOpacity
-            style={styles.groupedRow}
-            onPress={() =>
-              showBottomSheet({
-                title: 'Front Desk Operators',
-                message: 'Annamaiah Reddy (Admin)\nReceptionist Duty: Front Desk Terminal\nNight Duty Officer: Active\nAll terminals operational.',
-                icon: 'user',
-                primaryButtonText: 'Understood'
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#f1f5f9' }]}>
-                <Ionicons name="person-outline" size={18} color="#334155" />
-              </View>
-              <View>
-                <Text style={styles.rowTitle}>Front Desk Operators</Text>
-                <Text style={styles.rowSubtitle}>2 active staff members configured</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
 
           <View style={styles.divider} />
 
@@ -372,21 +291,21 @@ export default function MoreScreen() {
             style={styles.groupedRow}
             onPress={() =>
               showBottomSheet({
-                title: 'Roles & Security Privileges',
-                message: 'Two-factor authentication enabled for all administrative withdrawals and rate revisions. Session timeout set to 24h idle.',
-                icon: 'security',
+                title: 'Sacred Temples & Timings',
+                message: 'Sri Venkateswara Swamy Temple (Tirumala)\nOpen: 03:00 AM - 11:30 PM\nDistance: 22 km via First Ghat Road.\nPadmavathi Ammavari Temple: 5 km.',
+                icon: 'location',
                 primaryButtonText: 'Done'
               })
             }
             activeOpacity={0.7}
           >
             <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#f1f5f9' }]}>
-                <Ionicons name="shield-outline" size={18} color="#334155" />
+              <View style={[styles.rowIconCircle, { backgroundColor: '#fff7ed' }]}>
+                <Ionicons name="sparkles-outline" size={18} color="#ea580c" />
               </View>
               <View>
-                <Text style={styles.rowTitle}>Roles & Permissions</Text>
-                <Text style={styles.rowSubtitle}>Role-based access control enabled</Text>
+                <Text style={styles.rowTitle}>Sacred Temples & Timings</Text>
+                <Text style={styles.rowSubtitle}>Tirumala & local temple timings for guests</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -398,21 +317,21 @@ export default function MoreScreen() {
             style={styles.groupedRow}
             onPress={() =>
               showBottomSheet({
-                title: 'Security & Audit Logs',
-                message: 'Recent event: Session login verified at 14:32:00.\nCryptographic signing: Active.\nZero unauthorized access attempts detected.',
-                icon: 'document',
+                title: 'Trip2Tirupati Partner Support',
+                message: '24/7 Dedicated Partner Helpline:\n📞 +91 877 222 5555\n💬 WhatsApp: +91 98480 12345\n✉️ partner-support@trip2tirupati.com',
+                icon: 'info',
                 primaryButtonText: 'Close'
               })
             }
             activeOpacity={0.7}
           >
             <View style={styles.rowLeft}>
-              <View style={[styles.rowIconCircle, { backgroundColor: '#f1f5f9' }]}>
-                <Ionicons name="document-text-outline" size={18} color="#334155" />
+              <View style={[styles.rowIconCircle, { backgroundColor: '#f5f3ff' }]}>
+                <Ionicons name="help-buoy-outline" size={18} color="#7c3aed" />
               </View>
               <View>
-                <Text style={styles.rowTitle}>Security & Audit Logs</Text>
-                <Text style={styles.rowSubtitle}>Immutable audit trail active</Text>
+                <Text style={styles.rowTitle}>Help & Partner Support</Text>
+                <Text style={styles.rowSubtitle}>24/7 Phone, WhatsApp & Email assistance</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -424,8 +343,8 @@ export default function MoreScreen() {
           style={styles.signOutBtn}
           onPress={() =>
             showBottomSheet({
-              title: 'Active Partner Session',
-              message: 'You are signed into Annamaiah Guest House Tirupati as Partner Super Admin (ID: AP-8160).',
+              title: 'Partner Session',
+              message: 'You are signed into Annamaiah Guest House Tirupati as Partner (ID: AP-8160).',
               icon: 'user',
               primaryButtonText: 'Stay Signed In'
             })
@@ -433,7 +352,7 @@ export default function MoreScreen() {
           activeOpacity={0.8}
         >
           <Ionicons name="log-out-outline" size={18} color="#ef4444" />
-          <Text style={styles.signOutBtnText}>Partner Session Active (ID: AP-8160)</Text>
+          <Text style={styles.signOutBtnText}>Sign Out (ID: AP-8160)</Text>
         </TouchableOpacity>
 
         <View style={{ height: 110 }} />

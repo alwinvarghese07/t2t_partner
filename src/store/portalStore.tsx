@@ -153,7 +153,7 @@ const initialNotifications: NotificationItem[] = [
   { id: 6, title: 'Guest Review', desc: 'usha rani left a 5-star check-in feedback.', time: '1 day ago', unread: true },
   { id: 7, title: 'New Onboarding Request', desc: 'Sri Srinivasa Heritage Homestay applied for partner registration.', time: '2 days ago', unread: true },
   { id: 8, title: 'System Maintenance Notice', desc: 'Scheduled portal optimization completed successfully.', time: '2 days ago', unread: true },
-  { id: 9, title: 'Ledger Settlement Ready', desc: 'Weekly auto-payout reconciliation batch generated.', time: '3 days ago', unread: true },
+  { id: 9, title: 'Weekly Settlement Ready', desc: 'Weekly auto-payout reconciliation batch generated.', time: '3 days ago', unread: true },
   { id: 10, title: 'Welcome to Partner Portal v2.0', desc: 'Single-pane operations view configured for Tirupati property.', time: '4 days ago', unread: true }
 ];
 

@@ -28,12 +28,11 @@ import { Fonts } from '@/constants/typography';
 export default function DashboardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { property, bookings, inventory, ledger, notifications, toggleInventory } = usePortal();
+  const { property, bookings, inventory, notifications, toggleInventory } = usePortal();
 
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState<'Oct 2026' | 'All Time'>('Oct 2026');
-  const [selectedChannel, setSelectedChannel] = useState<'Channels' | 'Demographics'>('Channels');
 
-  const totalBalance = ledger.reduce((sum, item) => sum + item.credit, 0);
+  const totalBalance = bookings.reduce((sum, item) => sum + item.amount, 0);
   const pendingCount = bookings.filter(b => b.status === 'Pending Confirmation').length;
   const unreadCount = notifications.filter(n => n.unread).length;
   const primaryRoom = inventory[0];
@@ -117,17 +116,17 @@ export default function DashboardScreen() {
               </Text>
             </View>
 
-            {/* 3 Dark Action Buttons with Labels (Send, Request, Add style) */}
+            {/* Action Buttons for quick navigation */}
             <View style={styles.heroActionButtonsRow}>
               <View style={styles.heroActionCol}>
                 <TouchableOpacity
                   style={styles.heroRoundBtn}
-                  onPress={() => router.push('/(tabs)/ledger')}
+                  onPress={() => router.push('/(tabs)/bookings')}
                   activeOpacity={0.85}
                 >
-                  <Ionicons name="arrow-up-outline" size={20} color="#ffffff" style={{ transform: [{ rotate: '45deg' }] }} />
+                  <Ionicons name="calendar-outline" size={20} color="#ffffff" />
                 </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Payout</Text>
+                <Text style={styles.heroActionLabel}>Bookings</Text>
               </View>
 
               <View style={styles.heroActionCol}>
@@ -136,20 +135,9 @@ export default function DashboardScreen() {
                   onPress={() => router.push('/(tabs)/catalog')}
                   activeOpacity={0.85}
                 >
-                  <Ionicons name="flash-outline" size={20} color="#ffffff" />
+                  <Ionicons name="bed-outline" size={20} color="#ffffff" />
                 </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Rates</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/create-booking')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="add" size={22} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Walk-in</Text>
+                <Text style={styles.heroActionLabel}>Catalog</Text>
               </View>
             </View>
           </View>
@@ -174,7 +162,7 @@ export default function DashboardScreen() {
 
           <View style={styles.kpiTwinCard}>
             <View style={styles.twinHeader}>
-              <Text style={styles.twinTitle}>Peak Inflow</Text>
+              <Text style={styles.twinTitle}>Peak Season</Text>
               <View style={[styles.twinIconBox, { backgroundColor: '#f3e8ff' }]}>
                 <Ionicons name="heart" size={14} color="#7c3aed" />
               </View>
@@ -209,7 +197,7 @@ export default function DashboardScreen() {
         <View style={styles.chartCard}>
           <View style={styles.chartHeader}>
             <View>
-              <Text style={styles.chartMainTitle}>Occupancy & Devotee Inflow</Text>
+              <Text style={styles.chartMainTitle}>Occupancy Trends</Text>
               <View style={styles.chartLegendRow}>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#f97316' }]} />
@@ -315,209 +303,6 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Devotee Booking Channels Breakdown Card */}
-        <View style={styles.channelsCard}>
-          <View style={styles.channelsHeader}>
-            <View>
-              <Text style={styles.channelsTitle}>Devotee Inflow Channels</Text>
-              <Text style={styles.channelsSubtitle}>Verified partner booking distribution</Text>
-            </View>
-
-            <View style={styles.channelSegment}>
-              <TouchableOpacity
-                style={[styles.chanSegBtn, selectedChannel === 'Channels' && styles.chanSegBtnActive]}
-                onPress={() => setSelectedChannel('Channels')}
-              >
-                <Text style={[styles.chanSegText, selectedChannel === 'Channels' && styles.chanSegTextActive]}>Sources</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.chanSegBtn, selectedChannel === 'Demographics' && styles.chanSegBtnActive]}
-                onPress={() => setSelectedChannel('Demographics')}
-              >
-                <Text style={[styles.chanSegText, selectedChannel === 'Demographics' && styles.chanSegTextActive]}>Regions</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Progress Capsule Bars */}
-          {selectedChannel === 'Channels' ? (
-            <View style={styles.channelsList}>
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#e0f2fe' }]}>
-                    <Ionicons name="globe-outline" size={15} color="#0284c7" />
-                  </View>
-                  <Text style={styles.channelName}>Online Partner Portal</Text>
-                  <Text style={styles.channelPercent}>62%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '62%', backgroundColor: '#0284c7' }]} />
-                </View>
-              </View>
-
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#f3e8ff' }]}>
-                    <Ionicons name="sparkles-outline" size={15} color="#7c3aed" />
-                  </View>
-                  <Text style={styles.channelName}>Darshan Tour Packages</Text>
-                  <Text style={styles.channelPercent}>24%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '24%', backgroundColor: '#7c3aed' }]} />
-                </View>
-              </View>
-
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#fef3c7' }]}>
-                    <Ionicons name="walk-outline" size={15} color="#d97706" />
-                  </View>
-                  <Text style={styles.channelName}>Front Desk Walk-ins</Text>
-                  <Text style={styles.channelPercent}>14%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '14%', backgroundColor: '#d97706' }]} />
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.channelsList}>
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#ecfdf5' }]}>
-                    <Ionicons name="location-outline" size={15} color="#059669" />
-                  </View>
-                  <Text style={styles.channelName}>Tamil Nadu Pilgrims</Text>
-                  <Text style={styles.channelPercent}>45%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '45%', backgroundColor: '#059669' }]} />
-                </View>
-              </View>
-
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#eff6ff' }]}>
-                    <Ionicons name="location-outline" size={15} color="#3b82f6" />
-                  </View>
-                  <Text style={styles.channelName}>Karnataka Devotees</Text>
-                  <Text style={styles.channelPercent}>32%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '32%', backgroundColor: '#3b82f6' }]} />
-                </View>
-              </View>
-
-              <View style={styles.channelRow}>
-                <View style={styles.channelMeta}>
-                  <View style={[styles.channelIcon, { backgroundColor: '#fff7ed' }]}>
-                    <Ionicons name="location-outline" size={15} color="#ea580c" />
-                  </View>
-                  <Text style={styles.channelName}>Telangana & AP Native</Text>
-                  <Text style={styles.channelPercent}>23%</Text>
-                </View>
-                <View style={styles.channelTrack}>
-                  <View style={[styles.channelFill, { width: '23%', backgroundColor: '#ea580c' }]} />
-                </View>
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* Today's Front Desk Pulse Section - Redesigned to match top items */}
-        <Text style={styles.sectionHeading}>Today&apos;s Front Desk Pulse</Text>
-
-        {/* Hero White Pulse Card (matching top hero card style) */}
-        <View style={styles.heroAnalyticsCard}>
-          <View style={styles.heroCardContent}>
-            <View style={styles.heroCardHeaderRow}>
-              <Text style={styles.balanceHeaderLabel}>PILGRIM ARRIVALS & TURNOVER</Text>
-              <View style={styles.surgeBadge}>
-                <View style={styles.pulseDot} />
-                <Text style={styles.surgeBadgeText}>Live Counter</Text>
-              </View>
-            </View>
-
-            <View style={styles.balanceValueRow}>
-              <Text style={styles.heroBigBalance}>1 Devotee Group</Text>
-            </View>
-
-            <View style={styles.surgeRow}>
-              <Ionicons name="time-outline" size={14} color="#059669" />
-              <Text style={styles.balanceSubtext}>
-                usha rani • Standard Double Room • Expected Arrival: 05:30 PM
-              </Text>
-            </View>
-
-            {/* 3 Circular Flat Dark Action Buttons matching top hero */}
-            <View style={styles.heroActionButtonsRow}>
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/create-booking')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="person-add" size={20} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Walk-in</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/(tabs)/bookings')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="calendar" size={20} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Check-ins</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/(tabs)/catalog')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="bed" size={20} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Room Units</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Twin Highlight Cards for Desk Operations (matching top twin cards) */}
-        <View style={styles.kpiTwinRow}>
-          <View style={styles.kpiTwinCard}>
-            <View style={styles.twinHeader}>
-              <Text style={styles.twinTitle}>Expected Arrivals</Text>
-              <View style={[styles.twinIconBox, { backgroundColor: '#eff6ff' }]}>
-                <Ionicons name="log-in-outline" size={14} color="#2563eb" />
-              </View>
-            </View>
-            <Text style={styles.twinCategory}>usha rani (2 Guests)</Text>
-            <Text style={styles.twinAmount}>1 Group</Text>
-            <View style={styles.twinTrendPill}>
-              <Ionicons name="checkmark-circle" size={11} color="#059669" />
-              <Text style={styles.twinTrendText}>Confirmed Booking</Text>
-            </View>
-          </View>
-
-          <View style={styles.kpiTwinCard}>
-            <View style={styles.twinHeader}>
-              <Text style={styles.twinTitle}>Housekeeping</Text>
-              <View style={[styles.twinIconBox, { backgroundColor: '#f0fdf4' }]}>
-                <Ionicons name="sparkles-outline" size={14} color="#16a34a" />
-              </View>
-            </View>
-            <Text style={styles.twinCategory}>Sanitized & Ready</Text>
-            <Text style={styles.twinAmount}>9 Units Ready</Text>
-            <Text style={styles.twinSub}>1 Occupied • 0 Due Out</Text>
-          </View>
-        </View>
-
         {/* Property Occupancy Progress Bar */}
         <View style={styles.occupancyCard}>
           <View style={styles.occupancyTextRow}>
@@ -572,10 +357,10 @@ export default function DashboardScreen() {
           </View>
         )}
 
-        {/* Recent Transactions List (matching Image 1 fintech style) */}
+        {/* Recent Bookings List */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeadingNoMargin}>Recent Transactions</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/ledger')}>
+          <Text style={styles.sectionHeadingNoMargin}>Recent Bookings</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/bookings')}>
             <Text style={styles.viewAllText}>See all</Text>
           </TouchableOpacity>
         </View>
@@ -972,102 +757,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.medium,
     color: '#8e95a2',
   },
-  // Channels Breakdown Card
-  channelsCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: '#edf0f5',
-    marginBottom: 20,
-  },
-  channelsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  channelsTitle: {
-    fontSize: 15,
-    fontFamily: Fonts.bold,
-    color: '#111318',
-  },
-  channelsSubtitle: {
-    fontSize: 11.5,
-    fontFamily: Fonts.regular,
-    color: '#8e95a2',
-    marginTop: 2,
-  },
-  channelSegment: {
-    flexDirection: 'row',
-    backgroundColor: '#f1f4f9',
-    borderRadius: 9999,
-    padding: 3,
-  },
-  chanSegBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 9999,
-  },
-  chanSegBtnActive: {
-    backgroundColor: '#ffffff',
-  },
-  chanSegText: {
-    fontSize: 11,
-    fontFamily: Fonts.medium,
-    color: '#8e95a2',
-  },
-  chanSegTextActive: {
-    color: '#111318',
-    fontFamily: Fonts.semiBold,
-  },
-  channelsList: {
-    gap: 12,
-  },
-  channelRow: {
-    gap: 6,
-  },
-  channelMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  channelIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  channelName: {
-    fontSize: 12.5,
-    fontFamily: Fonts.medium,
-    color: '#111318',
-    flex: 1,
-  },
-  channelPercent: {
-    fontSize: 12.5,
-    fontFamily: Fonts.bold,
-    color: '#111318',
-  },
-  channelTrack: {
-    height: 6,
-    backgroundColor: '#f1f4f9',
-    borderRadius: 9999,
-    overflow: 'hidden',
-  },
-  channelFill: {
-    height: '100%',
-    borderRadius: 9999,
-  },
-  // Front Desk Pulse
-  sectionHeading: {
-    fontSize: 13,
-    fontFamily: Fonts.semiBold,
-    color: '#8e95a2',
-    marginBottom: 10,
-    marginLeft: 4,
-  },
   cleanCard: {
     backgroundColor: '#ffffff',
     borderRadius: 22,
@@ -1075,39 +764,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#edf0f5',
     marginBottom: 16,
-  },
-  deskHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  cardHeaderTitle: {
-    fontSize: 14.5,
-    fontFamily: Fonts.bold,
-    color: '#111318',
-  },
-  cardHeaderSubtitle: {
-    fontSize: 11.5,
-    fontFamily: Fonts.regular,
-    color: '#8e95a2',
-    marginTop: 2,
-  },
-  pillActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#111318',
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 9999,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  pillActionText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontFamily: Fonts.semiBold,
   },
   occupancyCard: {
     backgroundColor: '#ffffff',

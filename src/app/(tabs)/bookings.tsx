@@ -134,50 +134,6 @@ export default function BookingsScreen() {
                 </Text>
               </View>
             </View>
-
-            {/* 3 Circular Action Buttons */}
-            <View style={styles.heroActionButtonsRow}>
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/create-booking')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="person-add-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Walk-in</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => setActiveTab('Pending')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="hourglass-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Pending</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() =>
-                    showBottomSheet({
-                      title: 'Export Manifest',
-                      message: 'Scheduled devotee arrivals and room allotment PDF manifest is ready for download.',
-                      icon: 'document',
-                      primaryButtonText: 'Download PDF',
-                      secondaryButtonText: 'Close'
-                    })
-                  }
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="download-outline" size={18} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Export</Text>
-              </View>
-            </View>
           </View>
         </View>
 

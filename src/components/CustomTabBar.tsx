@@ -25,8 +25,6 @@ export default function CustomTabBar(props: any) {
         return isFocused ? 'calendar' : 'calendar-outline';
       case 'catalog':
         return isFocused ? 'bed' : 'bed-outline';
-      case 'ledger':
-        return isFocused ? 'wallet' : 'wallet-outline';
       case 'more':
         return isFocused ? 'settings' : 'settings-outline';
       default:
@@ -39,7 +37,6 @@ export default function CustomTabBar(props: any) {
       case 'index': return 'Home';
       case 'bookings': return 'Bookings';
       case 'catalog': return 'Catalog';
-      case 'ledger': return 'Ledger';
       case 'more': return 'Settings';
       default: return name;
     }
@@ -50,7 +47,6 @@ export default function CustomTabBar(props: any) {
       case 'index': return '/(tabs)';
       case 'bookings': return '/(tabs)/bookings';
       case 'catalog': return '/(tabs)/catalog';
-      case 'ledger': return '/(tabs)/ledger';
       case 'more': return '/(tabs)/more';
       default: return `/(tabs)/${name}`;
     }

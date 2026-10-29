@@ -72,7 +72,7 @@ export default function NotificationsScreen() {
           </View>
 
           <Text style={styles.heroSubtext}>
-            Real-time updates on reservations, occupancy thresholds, and payment ledger receipts.
+            Real-time updates on reservations, occupancy thresholds, and payment receipts.
           </Text>
 
           {/* 3 Circular Action Buttons */}

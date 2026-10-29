@@ -62,7 +62,7 @@ export default function CreateBookingScreen() {
 
     showBottomSheet({
       title: 'Reservation Confirmed!',
-      message: `Walk-in booking ${newId} for ${customer.trim()} is successfully confirmed and added to the front desk ledger.`,
+      message: `Direct reservation ${newId} for ${customer.trim()} is successfully confirmed and added to your bookings.`,
       icon: 'success',
       primaryButtonText: 'View Reservations',
       onPrimaryPress: () => router.back()
@@ -273,7 +273,7 @@ export default function CreateBookingScreen() {
           <View style={styles.summaryRow}>
             <View>
               <Text style={styles.summaryLabel}>NET AMOUNT PAYABLE</Text>
-              <Text style={styles.summarySub}>Inclusive of taxes. Immediate ledger ledger credit.</Text>
+              <Text style={styles.summarySub}>Inclusive of taxes. Immediate reservation confirmation.</Text>
             </View>
             <Text style={styles.summaryPrice}>₹ {selectedRoom.price.toLocaleString()}</Text>
           </View>
