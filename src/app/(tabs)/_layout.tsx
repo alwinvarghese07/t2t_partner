@@ -1,8 +1,15 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import React from 'react';
 import CustomTabBar from '@/components/CustomTabBar';
+import { usePortal } from '@/store/portalStore';
 
 export default function TabLayout() {
+  const { isAuthenticated } = usePortal();
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <Tabs
       tabBar={props => <CustomTabBar {...props} />}

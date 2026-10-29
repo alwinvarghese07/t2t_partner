@@ -28,13 +28,13 @@ export default function RootLayout() {
       <BottomSheetProvider>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="login"
             options={{
               headerShown: false,
             }}
           />
+          <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="create-booking"
             options={{

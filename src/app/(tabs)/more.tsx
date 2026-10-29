@@ -18,7 +18,7 @@ import { useBottomSheet } from '@/context/BottomSheetContext';
 export default function MoreScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { property, notifications } = usePortal();
+  const { property, notifications, logout } = usePortal();
   const { showBottomSheet } = useBottomSheet();
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -347,7 +347,10 @@ export default function MoreScreen() {
               message: 'Are you sure you want to sign out from Annamaiah Guest House (Partner ID: AP-8160)?',
               icon: 'warning',
               primaryButtonText: 'Sign Out',
-              onPrimaryPress: () => router.replace('/login'),
+              onPrimaryPress: () => {
+                logout();
+                router.replace('/login');
+              },
               secondaryButtonText: 'Stay Signed In'
             })
           }

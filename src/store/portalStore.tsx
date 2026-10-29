@@ -73,6 +73,9 @@ interface PortalState {
   toggleInventory: (id: string) => void;
   addPackage: (pkg: PackageItem) => void;
   markAllNotificationsRead: () => void;
+  isAuthenticated: boolean;
+  setIsAuthenticated: (val: boolean) => void;
+  logout: () => void;
 }
 
 const initialBookings: Booking[] = [
@@ -165,6 +168,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [packages, setPackages] = useState<PackageItem[]>(initialPackages);
   const [ledger, setLedger] = useState<LedgerTransaction[]>(initialLedger);
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const logout = () => {
+    setIsAuthenticated(false);
+  };
 
   const property = {
     name: 'Annamaiah Guest House Tirupati',
@@ -261,7 +269,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updateBookingStatus,
       toggleInventory,
       addPackage,
-      markAllNotificationsRead
+      markAllNotificationsRead,
+      isAuthenticated,
+      setIsAuthenticated,
+      logout
     }}>
       {children}
     </PortalContext.Provider>
