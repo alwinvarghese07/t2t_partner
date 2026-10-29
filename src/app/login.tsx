@@ -8,12 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path, Rect, Defs, LinearGradient, Stop, Pattern } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { Fonts } from '@/constants/typography';
 import { useBottomSheet } from '@/context/BottomSheetContext';
 import { usePortal } from '@/store/portalStore';
@@ -26,21 +27,16 @@ export default function LoginScreen() {
 
   // Authentication Flow Step: 'credentials' -> 'otp'
   const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
-  const [mode, setMode] = useState<'login' | 'register'>('login');
 
   // Credentials State
   const [email, setEmail] = useState('partner@trip2tirupati.com');
   const [password, setPassword] = useState('partner8160#');
-  const [fullName, setFullName] = useState('Annamaiah Reddy');
-  const [phone, setPhone] = useState('+91 98765 43210');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
   // Focus States
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-  const [nameFocused, setNameFocused] = useState(false);
-  const [phoneFocused, setPhoneFocused] = useState(false);
 
   // OTP State
   const [otp, setOtp] = useState('');
@@ -61,26 +57,14 @@ export default function LoginScreen() {
 
   // Handle proceed from credentials to OTP verification
   const handleProceedToOtp = () => {
-    if (mode === 'login') {
-      if (!email.trim() || !password.trim()) {
-        showBottomSheet({
-          title: 'Missing Details',
-          message: 'Please enter your partner email and password to proceed.',
-          icon: 'warning',
-          primaryButtonText: 'Try Again'
-        });
-        return;
-      }
-    } else {
-      if (!fullName.trim() || !email.trim() || !password.trim()) {
-        showBottomSheet({
-          title: 'Required Information',
-          message: 'Please complete all fields to register your property account.',
-          icon: 'warning',
-          primaryButtonText: 'OK'
-        });
-        return;
-      }
+    if (!email.trim() || !password.trim()) {
+      showBottomSheet({
+        title: 'Missing Details',
+        message: 'Please enter your partner email and password to proceed.',
+        icon: 'warning',
+        primaryButtonText: 'Try Again'
+      });
+      return;
     }
 
     // Switch to OTP verification step
@@ -159,27 +143,16 @@ export default function LoginScreen() {
     <View style={styles.root}>
       <StatusBar style="light" />
 
-      {/* Top Dark Hero Background */}
-      <View style={[styles.darkHeaderWrapper, { paddingTop: dynamicTopInset }]}>
-        {/* Subtle geometric pattern in background */}
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Svg width="100%" height="100%">
-            <Defs>
-              <LinearGradient id="darkGrad" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#111622" />
-                <Stop offset="50%" stopColor="#0d111a" />
-                <Stop offset="100%" stopColor="#080a10" />
-              </LinearGradient>
-              <Pattern id="tiles" width="40" height="40" patternUnits="userSpaceOnUse">
-                <Rect x="0" y="0" width="38" height="38" fill="rgba(255,255,255,0.015)" rx="4" />
-              </Pattern>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#darkGrad)" />
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#tiles)" />
-          </Svg>
-        </View>
+      {/* Top Header with Sacred Tirupati Temple Image */}
+      <ImageBackground
+        source={require('@/assets/images/tirupati-temple.jpg')}
+        style={[styles.templeHeader, { paddingTop: dynamicTopInset }]}
+        resizeMode="cover"
+      >
+        {/* Subtle Dark Vignette Overlay for Crisp Contrast */}
+        <View style={styles.imageOverlay} />
 
-        {/* Back Button */}
+        {/* Back Button Row */}
         <View style={styles.topBarRow}>
           <TouchableOpacity
             style={styles.backCircleBtn}
@@ -196,34 +169,9 @@ export default function LoginScreen() {
             <Ionicons name="arrow-back" size={20} color="#ffffff" />
           </TouchableOpacity>
         </View>
+      </ImageBackground>
 
-        {/* Headline Titles */}
-        <View style={styles.heroTextContainer}>
-          {step === 'credentials' ? (
-            <>
-              <Text style={styles.heroMainTitle}>
-                Go ahead and set up{'\n'}your account
-              </Text>
-              <Text style={styles.heroSubtitle}>
-                {mode === 'login'
-                  ? 'Sign in to enjoy the best managing experience'
-                  : 'Register to manage your rooms, packages & pilgrim services'}
-              </Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.heroMainTitle}>
-                Security{'\n'}Verification
-              </Text>
-              <Text style={styles.heroSubtitle}>
-                Enter the 6-digit OTP code sent to your registered partner email
-              </Text>
-            </>
-          )}
-        </View>
-      </View>
-
-      {/* Floating White Block sticking to bottom */}
+      {/* White Block sticking to bottom with Heading, Subheading & Form inside */}
       <View style={styles.whiteBottomCard}>
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
@@ -239,82 +187,42 @@ export default function LoginScreen() {
             bounces={false}
             keyboardShouldPersistTaps="handled"
           >
+            {/* Heading and Subheading inside the white block */}
+            <View style={styles.headingSection}>
+              {step === 'credentials' ? (
+                <>
+                  <Text style={styles.blockHeading}>
+                    Go ahead and set up{'\n'}your account
+                  </Text>
+                  <Text style={styles.blockSubheading}>
+                    Sign in to enjoy the best managing experience
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.blockHeading}>
+                    Security{'\n'}Verification
+                  </Text>
+                  <Text style={styles.blockSubheading}>
+                    Enter the 6-digit OTP code sent to your registered partner email
+                  </Text>
+                </>
+              )}
+            </View>
+
             {step === 'credentials' ? (
               /* ================= CREDENTIALS STEP ================= */
               <>
-                {/* Segmented Pill (Login | Register) */}
-                <View style={styles.segmentContainer}>
-                  <TouchableOpacity
-                    style={[styles.segmentBtn, mode === 'login' && styles.segmentBtnActive]}
-                    onPress={() => setMode('login')}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={[styles.segmentText, mode === 'login' && styles.segmentTextActive]}>
-                      Login
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.segmentBtn, mode === 'register' && styles.segmentBtnActive]}
-                    onPress={() => setMode('register')}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={[styles.segmentText, mode === 'register' && styles.segmentTextActive]}>
-                      Register
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* If Register mode, show Name & Phone */}
-                {mode === 'register' && (
-                  <>
-                    <View style={[styles.inputBox, nameFocused && styles.inputBoxFocused]}>
-                      <View style={styles.inputIconWrapper}>
-                        <Ionicons name="person-outline" size={20} color="#5f876f" />
-                      </View>
-                      <View style={styles.inputTextGroup}>
-                        <Text style={styles.inputMiniLabel}>Full Name / Property Admin</Text>
-                        <TextInput
-                          style={styles.textInput}
-                          value={fullName}
-                          onChangeText={setFullName}
-                          placeholder="e.g. Annamaiah Reddy"
-                          placeholderTextColor="#94a3b8"
-                          onFocus={() => setNameFocused(true)}
-                          onBlur={() => setNameFocused(false)}
-                          autoCapitalize="words"
-                        />
-                      </View>
-                    </View>
-
-                    <View style={[styles.inputBox, phoneFocused && styles.inputBoxFocused]}>
-                      <View style={styles.inputIconWrapper}>
-                        <Ionicons name="call-outline" size={20} color="#5f876f" />
-                      </View>
-                      <View style={styles.inputTextGroup}>
-                        <Text style={styles.inputMiniLabel}>Phone Number</Text>
-                        <TextInput
-                          style={styles.textInput}
-                          value={phone}
-                          onChangeText={setPhone}
-                          placeholder="+91 98765 43210"
-                          placeholderTextColor="#94a3b8"
-                          keyboardType="phone-pad"
-                          onFocus={() => setPhoneFocused(true)}
-                          onBlur={() => setPhoneFocused(false)}
-                        />
-                      </View>
-                    </View>
-                  </>
-                )}
-
-                {/* Email Address Input */}
-                <View style={[styles.inputBox, emailFocused && styles.inputBoxFocused]}>
-                  <View style={styles.inputIconWrapper}>
-                    <Ionicons name="mail-outline" size={20} color="#5f876f" />
-                  </View>
-                  <View style={styles.inputTextGroup}>
-                    <Text style={styles.inputMiniLabel}>Email Address</Text>
+                {/* Field 1: Email Address with Outside Label */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>Email Address</Text>
+                  <View style={[styles.inputBox, emailFocused && styles.inputBoxFocused]}>
+                    <Ionicons
+                      name="mail-outline"
+                      size={19}
+                      color={emailFocused ? '#111318' : '#94a3b8'}
+                      style={styles.inputLeftIcon}
+                    />
                     <TextInput
                       style={styles.textInput}
                       value={email}
@@ -330,13 +238,16 @@ export default function LoginScreen() {
                   </View>
                 </View>
 
-                {/* Password Input */}
-                <View style={[styles.inputBox, passwordFocused && styles.inputBoxFocused]}>
-                  <View style={styles.inputIconWrapper}>
-                    <Ionicons name="lock-closed-outline" size={20} color="#5f876f" />
-                  </View>
-                  <View style={styles.inputTextGroup}>
-                    <Text style={styles.inputMiniLabel}>Password</Text>
+                {/* Field 2: Password with Outside Label */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>Password</Text>
+                  <View style={[styles.inputBox, passwordFocused && styles.inputBoxFocused]}>
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={19}
+                      color={passwordFocused ? '#111318' : '#94a3b8'}
+                      style={styles.inputLeftIcon}
+                    />
                     <TextInput
                       style={styles.textInput}
                       value={password}
@@ -348,19 +259,19 @@ export default function LoginScreen() {
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => setPasswordFocused(false)}
                     />
+                    <TouchableOpacity
+                      style={styles.eyeToggleBtn}
+                      onPress={() => setShowPassword(prev => !prev)}
+                      activeOpacity={0.7}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Ionicons
+                        name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                        size={20}
+                        color="#94a3b8"
+                      />
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity
-                    style={styles.eyeToggleBtn}
-                    onPress={() => setShowPassword(prev => !prev)}
-                    activeOpacity={0.7}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Ionicons
-                      name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                      size={20}
-                      color="#94a3b8"
-                    />
-                  </TouchableOpacity>
                 </View>
 
                 {/* Remember Me & Forgot Password Row */}
@@ -376,22 +287,18 @@ export default function LoginScreen() {
                     <Text style={styles.rememberText}>Remember me</Text>
                   </TouchableOpacity>
 
-                  {mode === 'login' && (
-                    <TouchableOpacity onPress={handleForgotPassword} activeOpacity={0.7}>
-                      <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                    </TouchableOpacity>
-                  )}
+                  <TouchableOpacity onPress={handleForgotPassword} activeOpacity={0.7}>
+                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                  </TouchableOpacity>
                 </View>
 
-                {/* Primary Action Button -> Switches to OTP verification */}
+                {/* Primary Action Button (Solid Black) */}
                 <TouchableOpacity
                   style={styles.primaryAuthButton}
                   onPress={handleProceedToOtp}
                   activeOpacity={0.88}
                 >
-                  <Text style={styles.primaryAuthButtonText}>
-                    {mode === 'login' ? 'Login' : 'Create Account'}
-                  </Text>
+                  <Text style={styles.primaryAuthButtonText}>Login</Text>
                 </TouchableOpacity>
 
                 {/* Divider: Or login with */}
@@ -447,7 +354,7 @@ export default function LoginScreen() {
                 {/* 2-Step Verification Header Pill */}
                 <View style={styles.otpBadgeContainer}>
                   <View style={styles.otpBadge}>
-                    <Ionicons name="shield-checkmark" size={14} color="#059669" />
+                    <Ionicons name="shield-checkmark" size={14} color="#111318" />
                     <Text style={styles.otpBadgeText}>2-Step Security Verification</Text>
                   </View>
                 </View>
@@ -456,7 +363,7 @@ export default function LoginScreen() {
                 <View style={styles.otpRecipientCard}>
                   <View style={styles.otpRecipientLeft}>
                     <View style={styles.otpRecipientIconBox}>
-                      <Ionicons name="mail" size={18} color="#5f876f" />
+                      <Ionicons name="mail" size={18} color="#111318" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.otpRecipientLabel}>Code Sent To</Text>
@@ -505,7 +412,7 @@ export default function LoginScreen() {
                     onBlur={() => setOtpFocused(false)}
                   />
 
-                  {/* 6 Visual Digit Boxes */}
+                  {/* 6 Visual Digit Boxes with Black Selection Style */}
                   <View style={styles.otpBoxesRow} pointerEvents="none">
                     {[0, 1, 2, 3, 4, 5].map(index => {
                       const char = otp[index] || '';
@@ -549,7 +456,7 @@ export default function LoginScreen() {
                   )}
                 </View>
 
-                {/* Primary Action Button: Verify & Go to Home */}
+                {/* Primary Action Button: Solid Black */}
                 <TouchableOpacity
                   style={styles.primaryAuthButton}
                   onPress={() => handleVerifyOtp()}
@@ -564,7 +471,7 @@ export default function LoginScreen() {
                   onPress={() => setStep('credentials')}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name="arrow-back" size={15} color="#64748b" />
+                  <Ionicons name="arrow-back" size={15} color="#111318" />
                   <Text style={styles.otpBackActionText}>Use Different Login Email</Text>
                 </TouchableOpacity>
               </>
@@ -581,51 +488,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0d14',
   },
-  darkHeaderWrapper: {
-    backgroundColor: '#0a0d14',
-    paddingHorizontal: 22,
-    paddingBottom: 26,
+  templeHeader: {
+    height: 220,
+    width: '100%',
     position: 'relative',
-    overflow: 'hidden',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+  },
+  imageOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(0, 0, 0, 0.32)',
   },
   topBarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
     marginTop: 8,
+    zIndex: 10,
   },
   backCircleBtn: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-  heroTextContainer: {
-    gap: 8,
-  },
-  heroMainTitle: {
-    fontSize: 27,
-    fontFamily: Fonts.bold,
-    color: '#ffffff',
-    lineHeight: 33,
-    letterSpacing: -0.6,
-  },
-  heroSubtitle: {
-    fontSize: 13.5,
-    fontFamily: Fonts.regular,
-    color: 'rgba(255,255,255,0.65)',
-    lineHeight: 19,
-    marginTop: 2,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
   whiteBottomCard: {
     flex: 1,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
+    marginTop: -26,
     overflow: 'hidden',
     width: '100%',
   },
@@ -640,82 +535,66 @@ const styles = StyleSheet.create({
   cardScrollContent: {
     flexGrow: 1,
     paddingHorizontal: 22,
-    paddingTop: 24,
+    paddingTop: 28,
     maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
   },
-  segmentContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f1f5f9',
-    borderRadius: 9999,
-    padding: 4,
-    marginBottom: 20,
+  headingSection: {
+    marginBottom: 24,
   },
-  segmentBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 9999,
-  },
-  segmentBtnActive: {
-    backgroundColor: '#ffffff',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  segmentText: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-    color: '#94a3b8',
-  },
-  segmentTextActive: {
+  blockHeading: {
+    fontSize: 27,
     fontFamily: Fonts.bold,
     color: '#111318',
+    lineHeight: 33,
+    letterSpacing: -0.6,
+  },
+  blockSubheading: {
+    fontSize: 13.5,
+    fontFamily: Fonts.regular,
+    color: '#64748b',
+    lineHeight: 19,
+    marginTop: 6,
+  },
+  fieldGroup: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontFamily: Fonts.semiBold,
+    color: '#1e293b',
+    marginBottom: 8,
+    marginLeft: 2,
   },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 18,
+    backgroundColor: '#f8fafc',
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: '#eef2f6',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginBottom: 14,
+    borderColor: '#e2e8f0',
+    paddingHorizontal: 14,
+    height: 52,
   },
   inputBoxFocused: {
-    borderColor: '#5f876f',
-    backgroundColor: '#fafcfb',
+    borderColor: '#111318',
+    backgroundColor: '#ffffff',
   },
-  inputIconWrapper: {
-    width: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputTextGroup: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  inputMiniLabel: {
-    fontSize: 10.5,
-    fontFamily: Fonts.medium,
-    color: '#94a3b8',
-    marginBottom: 2,
+  inputLeftIcon: {
+    marginRight: 10,
   },
   textInput: {
+    flex: 1,
     fontSize: 14.5,
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.medium,
     color: '#111318',
     padding: 0,
     margin: 0,
   },
   eyeToggleBtn: {
-    padding: 4,
-    marginLeft: 8,
+    padding: 6,
+    marginLeft: 6,
   },
   rememberRow: {
     flexDirection: 'row',
@@ -741,8 +620,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   checkboxActive: {
-    backgroundColor: '#5f876f',
-    borderColor: '#5f876f',
+    backgroundColor: '#111318',
+    borderColor: '#111318',
   },
   rememberText: {
     fontSize: 13,
@@ -752,16 +631,19 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: 13,
     fontFamily: Fonts.semiBold,
-    color: '#5f876f',
+    color: '#111318',
   },
   primaryAuthButton: {
-    backgroundColor: '#5f876f',
+    backgroundColor: '#111318', // Black button matching user requirement
     borderRadius: 9999,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowOpacity: 0,
-    elevation: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
   primaryAuthButtonText: {
     color: '#ffffff',
@@ -798,7 +680,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     borderRadius: 9999,
     borderWidth: 1,
-    borderColor: '#eef2f6',
+    borderColor: '#e2e8f0',
     backgroundColor: '#ffffff',
   },
   googleIconBox: {
@@ -822,17 +704,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#f1f5f9',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 9999,
     borderWidth: 1,
-    borderColor: '#a7f3d0',
+    borderColor: '#e2e8f0',
   },
   otpBadgeText: {
     fontSize: 12,
     fontFamily: Fonts.semiBold,
-    color: '#059669',
+    color: '#111318',
   },
   otpRecipientCard: {
     flexDirection: 'row',
@@ -882,12 +764,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: '#111318',
   },
   otpChangeBtnText: {
     fontSize: 11.5,
     fontFamily: Fonts.semiBold,
-    color: '#5f876f',
+    color: '#111318',
   },
   otpInstructionText: {
     fontSize: 13,
@@ -920,12 +802,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   otpBoxFilled: {
-    borderColor: '#5f876f',
+    borderColor: '#111318',
     backgroundColor: '#ffffff',
   },
   otpBoxActive: {
-    borderColor: '#5f876f',
-    backgroundColor: '#f4f8f5',
+    borderColor: '#111318',
+    borderWidth: 2,
+    backgroundColor: '#ffffff',
   },
   otpBoxChar: {
     fontSize: 22,
@@ -947,7 +830,7 @@ const styles = StyleSheet.create({
   },
   otpTimerHighlight: {
     fontFamily: Fonts.semiBold,
-    color: '#5f876f',
+    color: '#111318',
   },
   otpResendActiveText: {
     fontSize: 13,
@@ -956,7 +839,7 @@ const styles = StyleSheet.create({
   },
   otpResendUnderline: {
     fontFamily: Fonts.bold,
-    color: '#5f876f',
+    color: '#111318',
     textDecorationLine: 'underline',
   },
   otpBackActionBtn: {
@@ -969,7 +852,7 @@ const styles = StyleSheet.create({
   },
   otpBackActionText: {
     fontSize: 13,
-    fontFamily: Fonts.medium,
-    color: '#64748b',
+    fontFamily: Fonts.semiBold,
+    color: '#111318',
   },
 });
