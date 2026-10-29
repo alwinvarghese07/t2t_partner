@@ -192,7 +192,7 @@ export default function LoginScreen() {
               {step === 'credentials' ? (
                 <>
                   <Text style={styles.blockHeading}>
-                    Go ahead and set up{'\n'}your account
+                    Go ahead and set up your account
                   </Text>
                   <Text style={styles.blockSubheading}>
                     Sign in to enjoy the best managing experience
