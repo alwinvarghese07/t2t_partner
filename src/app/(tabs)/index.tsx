@@ -1,77 +1,97 @@
-import React, { useState } from 'react';
+import { Fonts } from '@/constants/typography';
+import { usePortal } from '@/store/portalStore';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   Image,
   Platform,
-  Switch
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, {
-  Path,
-  Defs,
-  LinearGradient,
-  Stop,
   Circle,
-  Line,
+  Defs,
   G,
+  Line,
+  LinearGradient,
+  Path,
+  Stop,
   Text as SvgText
 } from 'react-native-svg';
-import { usePortal } from '@/store/portalStore';
-import { Fonts } from '@/constants/typography';
 
 const SERVICE_TYPES = [
   {
     id: 'accommodation',
     name: 'Accommodation',
     shortName: 'Stay',
+    pieLabel: 'Accommodation',
     percent: 54,
     startPct: 0,
     endPct: 54,
     amount: '₹24,375',
     details: '10 Active Units',
+    desc: 'Standard Double, Deluxe AC & Family Suites',
     color: '#f97316',
+    labelFactor: 0.62,
+    fontSize: 12.5,
+    percentSize: 14,
     icon: 'bed-outline' as const,
   },
   {
     id: 'darshan',
     name: 'Darshan Packages',
     shortName: 'Darshan',
+    pieLabel: 'Darshan',
     percent: 24,
     startPct: 54,
     endPct: 78,
     amount: '₹10,800',
     details: '3 Tour Circuits',
+    desc: 'VIP Tirumala Darshan & Pilgrim Sightseeing',
     color: '#7c3aed',
+    labelFactor: 0.62,
+    fontSize: 12,
+    percentSize: 13,
     icon: 'sparkles-outline' as const,
   },
   {
     id: 'transit',
     name: 'Transit & Cabs',
     shortName: 'Transit',
+    pieLabel: 'Transit',
     percent: 14,
     startPct: 78,
     endPct: 92,
     amount: '₹6,300',
     details: 'Hill Ghat Taxis',
+    desc: 'Station/Airport Pickups & Tirumala Ghat link',
     color: '#0284c7',
+    labelFactor: 0.66,
+    fontSize: 11,
+    percentSize: 12,
     icon: 'car-outline' as const,
   },
   {
     id: 'pooja',
     name: 'Pooja & Seva',
     shortName: 'Pooja',
+    pieLabel: 'Pooja',
     percent: 8,
     startPct: 92,
     endPct: 100,
     amount: '₹3,600',
     details: 'Special Sevas',
+    desc: 'Suprabhatham & Special Darshan assistance',
     color: '#10b981',
+    labelFactor: 0.72,
+    fontSize: 10.5,
+    percentSize: 11.5,
     icon: 'flower-outline' as const,
   },
 ];
@@ -91,6 +111,26 @@ const getPieSlice = (cx: number, cy: number, r: number, startPct: number, endPct
   const largeArcFlag = endPct - startPct > 50 ? 1 : 0;
 
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+};
+
+const getSliceOffset = (startPct: number, endPct: number, distance: number) => {
+  const midPct = (startPct + endPct) / 2;
+  const midAngle = (midPct / 100) * 360 - 90;
+  const midRad = (midAngle * Math.PI) / 180;
+  return {
+    x: Math.round(distance * Math.cos(midRad)),
+    y: Math.round(distance * Math.sin(midRad)),
+  };
+};
+
+const getSliceLabelPos = (cx: number, cy: number, r: number, startPct: number, endPct: number, factor = 0.65) => {
+  const midPct = (startPct + endPct) / 2;
+  const midAngle = (midPct / 100) * 360 - 90;
+  const midRad = (midAngle * Math.PI) / 180;
+  return {
+    x: Math.round(cx + r * factor * Math.cos(midRad)),
+    y: Math.round(cy + r * factor * Math.sin(midRad)),
+  };
 };
 
 export default function DashboardScreen() {
@@ -349,8 +389,7 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Service Types Section with Pie Chart */}
-        <Text style={styles.sectionHeading}>Service Types</Text>
+        {/* Service Types Section with Full-Size Pie Chart */}
         <View style={styles.serviceTypesCard}>
           <View style={styles.serviceCardHeader}>
             <View>
@@ -363,104 +402,126 @@ export default function DashboardScreen() {
             </View>
           </View>
 
-          {/* Pie Chart & Interactive Breakdown */}
-          <View style={styles.pieChartContainer}>
-            <View style={styles.pieSvgWrapper}>
-              <Svg width={140} height={140} viewBox="0 0 160 160">
-                {SERVICE_TYPES.map(item => {
-                  const isSelected = selectedService === item.id;
-                  const isAnySelected = selectedService !== null;
-                  return (
-                    <Path
-                      key={item.id}
-                      d={getPieSlice(80, 80, 68, item.startPct, item.endPct)}
-                      fill={item.color}
-                      opacity={!isAnySelected || isSelected ? 1 : 0.35}
-                      stroke="#ffffff"
-                      strokeWidth="2.5"
-                      onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
-                    />
-                  );
-                })}
+          {/* Interactive Tooltip Card */}
+          {selectedServiceItem ? (
+            <View style={styles.pieTooltipCard}>
+              <View style={styles.pieTooltipHeader}>
+                <View style={styles.pieTooltipTitleRow}>
+                  <View style={[styles.pieTooltipDot, { backgroundColor: selectedServiceItem.color }]} />
+                  <Text style={styles.pieTooltipTitle}>{selectedServiceItem.name}</Text>
+                  <View style={[styles.pieTooltipPill, { backgroundColor: `${selectedServiceItem.color}18` }]}>
+                    <Text style={[styles.pieTooltipPillText, { color: selectedServiceItem.color }]}>
+                      {selectedServiceItem.percent}% Share
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setSelectedService(null)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="close-circle" size={20} color="#94a3b8" />
+                </TouchableOpacity>
+              </View>
 
-                {/* Center Badge Hole */}
-                <Circle cx="80" cy="80" r="32" fill="#ffffff" stroke="#edf0f5" strokeWidth="1.5" />
-                <SvgText
-                  x="80"
-                  y="77"
-                  textAnchor="middle"
-                  fill="#111318"
-                  fontSize="13"
-                  fontFamily={Fonts.bold}
-                >
-                  {selectedServiceItem ? `${selectedServiceItem.percent}%` : '100%'}
-                </SvgText>
-                <SvgText
-                  x="80"
-                  y="90"
-                  textAnchor="middle"
-                  fill="#8e95a2"
-                  fontSize="8.5"
-                  fontFamily={Fonts.medium}
-                >
-                  {selectedServiceItem ? selectedServiceItem.shortName : 'Total'}
-                </SvgText>
-              </Svg>
+              <Text style={styles.pieTooltipDesc}>{selectedServiceItem.desc}</Text>
+
+              <View style={styles.pieTooltipMetricsRow}>
+                <View style={styles.pieTooltipMetric}>
+                  <Text style={styles.pieTooltipMetricLabel}>REVENUE</Text>
+                  <Text style={styles.pieTooltipMetricVal}>{selectedServiceItem.amount}</Text>
+                </View>
+                <View style={styles.pieTooltipDivider} />
+                <View style={styles.pieTooltipMetric}>
+                  <Text style={styles.pieTooltipMetricLabel}>INVENTORY</Text>
+                  <Text style={styles.pieTooltipMetricVal}>{selectedServiceItem.details}</Text>
+                </View>
+                <View style={styles.pieTooltipDivider} />
+                <View style={styles.pieTooltipMetric}>
+                  <Text style={styles.pieTooltipMetricLabel}>PORTFOLIO</Text>
+                  <Text style={[styles.pieTooltipMetricVal, { color: selectedServiceItem.color }]}>
+                    {selectedServiceItem.percent}%
+                  </Text>
+                </View>
+              </View>
             </View>
+          ) : (
+            <View style={styles.pieHintPill}>
+              <Ionicons name="finger-print-outline" size={13} color="#64748b" />
+              <Text style={styles.pieHintText}>Tap any slice to inspect details & breakdown</Text>
+            </View>
+          )}
 
-            {/* Right Legend */}
-            <View style={styles.pieLegendCol}>
+          {/* Full Size Pie Chart with Slices and Names on Pie */}
+          <View style={styles.fullPieSvgWrapper}>
+            <Svg width="100%" height={290} viewBox="0 0 320 290">
               {SERVICE_TYPES.map(item => {
                 const isSelected = selectedService === item.id;
+                const isAnySelected = selectedService !== null;
+                const offset = isSelected ? getSliceOffset(item.startPct, item.endPct, 8) : { x: 0, y: 0 };
+                const labelPos = getSliceLabelPos(160, 145, 120, item.startPct, item.endPct, item.labelFactor);
+
                 return (
-                  <TouchableOpacity
+                  <G
                     key={item.id}
-                    style={[styles.legendRowItem, isSelected && styles.legendRowItemSelected]}
+                    transform={`translate(${offset.x}, ${offset.y})`}
                     onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
-                    activeOpacity={0.7}
                   >
-                    <View style={[styles.legendColorBox, { backgroundColor: item.color }]} />
-                    <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text
-                        style={[styles.legendItemName, isSelected && { color: item.color, fontFamily: Fonts.bold }]}
-                        numberOfLines={1}
-                      >
-                        {item.name}
-                      </Text>
-                      <Text style={styles.legendItemSub}>{item.details}</Text>
-                    </View>
-                    <View style={{ alignItems: 'flex-end', marginLeft: 6 }}>
-                      <Text style={styles.legendItemPercent}>{item.percent}%</Text>
-                      <Text style={styles.legendItemAmount}>{item.amount}</Text>
-                    </View>
-                  </TouchableOpacity>
+                    <Path
+                      d={getPieSlice(160, 145, 120, item.startPct, item.endPct)}
+                      fill={item.color}
+                      opacity={!isAnySelected || isSelected ? 1 : 0.45}
+                      stroke="#ffffff"
+                      strokeWidth="2.5"
+                    />
+
+                    {/* Service Name & Percentage directly on Pie */}
+                    <SvgText
+                      x={labelPos.x}
+                      y={labelPos.y - 4}
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize={item.fontSize}
+                      fontFamily={Fonts.bold}
+                    >
+                      {item.pieLabel}
+                    </SvgText>
+                    <SvgText
+                      x={labelPos.x}
+                      y={labelPos.y + 12}
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize={item.percentSize}
+                      fontFamily={Fonts.bold}
+                    >
+                      {item.percent}%
+                    </SvgText>
+                  </G>
                 );
               })}
-            </View>
-          </View>
 
-          {/* Bottom Quick Chips */}
-          <View style={styles.serviceTypesFooterRow}>
-            {SERVICE_TYPES.map(item => {
-              const isSelected = selectedService === item.id;
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.serviceMiniStatPill,
-                    isSelected && { borderColor: item.color, backgroundColor: `${item.color}15` }
-                  ]}
-                  onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.serviceMiniDot, { backgroundColor: item.color }]} />
-                  <Text style={[styles.serviceMiniStatLabel, isSelected && { color: item.color, fontFamily: Fonts.bold }]}>
-                    {item.shortName}
-                  </Text>
-                  <Text style={[styles.serviceMiniStatVal, { color: item.color }]}>{item.percent}%</Text>
-                </TouchableOpacity>
-              );
-            })}
+              {/* Center Hub */}
+              <Circle cx="160" cy="145" r="28" fill="#ffffff" stroke="#f1f4f9" strokeWidth="2" />
+              <SvgText
+                x="160"
+                y="142"
+                textAnchor="middle"
+                fill="#111318"
+                fontSize="12.5"
+                fontFamily={Fonts.bold}
+              >
+                {selectedServiceItem ? `${selectedServiceItem.percent}%` : '100%'}
+              </SvgText>
+              <SvgText
+                x="160"
+                y="153"
+                textAnchor="middle"
+                fill="#8e95a2"
+                fontSize="8"
+                fontFamily={Fonts.medium}
+              >
+                {selectedServiceItem ? selectedServiceItem.shortName : 'Total'}
+              </SvgText>
+            </Svg>
           </View>
         </View>
 
@@ -774,93 +835,103 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.semiBold,
     color: '#059669',
   },
-  pieChartContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  pieSvgWrapper: {
-    width: 140,
-    height: 140,
+  fullPieSvgWrapper: {
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 6,
   },
-  pieLegendCol: {
-    flex: 1,
-    gap: 6,
+  pieTooltipCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 4,
   },
-  legendRowItem: {
+  pieTooltipHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  pieTooltipTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 6,
-    borderRadius: 10,
   },
-  legendRowItemSelected: {
-    backgroundColor: '#f8fafc',
+  pieTooltipDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
-  legendColorBox: {
-    width: 10,
-    height: 10,
-    borderRadius: 3,
-  },
-  legendItemName: {
-    fontSize: 12,
-    fontFamily: Fonts.semiBold,
-    color: '#111318',
-  },
-  legendItemSub: {
-    fontSize: 10,
-    fontFamily: Fonts.regular,
-    color: '#8e95a2',
-    marginTop: 1,
-  },
-  legendItemPercent: {
-    fontSize: 12,
+  pieTooltipTitle: {
+    fontSize: 13.5,
     fontFamily: Fonts.bold,
     color: '#111318',
   },
-  legendItemAmount: {
-    fontSize: 10,
+  pieTooltipPill: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 9999,
+  },
+  pieTooltipPillText: {
+    fontSize: 10.5,
+    fontFamily: Fonts.bold,
+  },
+  pieTooltipDesc: {
+    fontSize: 11,
     fontFamily: Fonts.regular,
-    color: '#8e95a2',
-    marginTop: 1,
+    color: '#64748b',
+    marginBottom: 8,
   },
-  serviceTypesFooterRow: {
+  pieTooltipMetricsRow: {
     flexDirection: 'row',
-    gap: 6,
-    paddingTop: 12,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#f1f4f9',
+    borderTopColor: '#edf2f7',
   },
-  serviceMiniStatPill: {
+  pieTooltipMetric: {
+    alignItems: 'center',
     flex: 1,
+  },
+  pieTooltipMetricLabel: {
+    fontSize: 9,
+    fontFamily: Fonts.bold,
+    color: '#94a3b8',
+    letterSpacing: 0.5,
+  },
+  pieTooltipMetricVal: {
+    fontSize: 12.5,
+    fontFamily: Fonts.bold,
+    color: '#111318',
+    marginTop: 2,
+  },
+  pieTooltipDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#e2e8f0',
+  },
+  pieHintPill: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#f1f4f9',
+    gap: 6,
     backgroundColor: '#f8fafc',
+    borderRadius: 9999,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#edf0f5',
+    marginBottom: 6,
+    alignSelf: 'center',
   },
-  serviceMiniDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  serviceMiniStatLabel: {
-    fontSize: 10,
+  pieHintText: {
+    fontSize: 11,
     fontFamily: Fonts.medium,
     color: '#64748b',
-  },
-  serviceMiniStatVal: {
-    fontSize: 10.5,
-    fontFamily: Fonts.bold,
   },
   // Side by side cards
   kpiTwinRow: {
