@@ -25,12 +25,83 @@ import Svg, {
 import { usePortal } from '@/store/portalStore';
 import { Fonts } from '@/constants/typography';
 
+const SERVICE_TYPES = [
+  {
+    id: 'accommodation',
+    name: 'Accommodation',
+    shortName: 'Stay',
+    percent: 54,
+    startPct: 0,
+    endPct: 54,
+    amount: '₹24,375',
+    details: '10 Active Units',
+    color: '#f97316',
+    icon: 'bed-outline' as const,
+  },
+  {
+    id: 'darshan',
+    name: 'Darshan Packages',
+    shortName: 'Darshan',
+    percent: 24,
+    startPct: 54,
+    endPct: 78,
+    amount: '₹10,800',
+    details: '3 Tour Circuits',
+    color: '#7c3aed',
+    icon: 'sparkles-outline' as const,
+  },
+  {
+    id: 'transit',
+    name: 'Transit & Cabs',
+    shortName: 'Transit',
+    percent: 14,
+    startPct: 78,
+    endPct: 92,
+    amount: '₹6,300',
+    details: 'Hill Ghat Taxis',
+    color: '#0284c7',
+    icon: 'car-outline' as const,
+  },
+  {
+    id: 'pooja',
+    name: 'Pooja & Seva',
+    shortName: 'Pooja',
+    percent: 8,
+    startPct: 92,
+    endPct: 100,
+    amount: '₹3,600',
+    details: 'Special Sevas',
+    color: '#10b981',
+    icon: 'flower-outline' as const,
+  },
+];
+
+const getPieSlice = (cx: number, cy: number, r: number, startPct: number, endPct: number) => {
+  const startAngle = (startPct / 100) * 360 - 90;
+  const endAngle = (endPct / 100) * 360 - 90;
+
+  const startRad = (startAngle * Math.PI) / 180;
+  const endRad = (endAngle * Math.PI) / 180;
+
+  const x1 = cx + r * Math.cos(startRad);
+  const y1 = cy + r * Math.sin(startRad);
+  const x2 = cx + r * Math.cos(endRad);
+  const y2 = cy + r * Math.sin(endRad);
+
+  const largeArcFlag = endPct - startPct > 50 ? 1 : 0;
+
+  return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+};
+
 export default function DashboardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { property, bookings, inventory, notifications, toggleInventory } = usePortal();
 
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState<'Oct 2026' | 'All Time'>('Oct 2026');
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+
+  const selectedServiceItem = SERVICE_TYPES.find(s => s.id === selectedService);
 
   const totalBalance = bookings.reduce((sum, item) => sum + item.amount, 0);
   const pendingCount = bookings.filter(b => b.status === 'Pending Confirmation').length;
@@ -114,31 +185,6 @@ export default function DashboardScreen() {
               <Text style={styles.balanceSubtext}>
                 Surge during Srivari Brahmotsavam pilgrimage
               </Text>
-            </View>
-
-            {/* Action Buttons for quick navigation */}
-            <View style={styles.heroActionButtonsRow}>
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/(tabs)/bookings')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="calendar-outline" size={20} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Bookings</Text>
-              </View>
-
-              <View style={styles.heroActionCol}>
-                <TouchableOpacity
-                  style={styles.heroRoundBtn}
-                  onPress={() => router.push('/(tabs)/catalog')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="bed-outline" size={20} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.heroActionLabel}>Catalog</Text>
-              </View>
             </View>
           </View>
         </View>
@@ -300,6 +346,121 @@ export default function DashboardScreen() {
               <Text style={[styles.chartXText, { color: '#f97316', fontFamily: Fonts.bold }]}>Today</Text>
               <Text style={styles.chartXText}>Oct 31</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Service Types Section with Pie Chart */}
+        <Text style={styles.sectionHeading}>Service Types</Text>
+        <View style={styles.serviceTypesCard}>
+          <View style={styles.serviceCardHeader}>
+            <View>
+              <Text style={styles.serviceCardTitle}>Service Distribution</Text>
+              <Text style={styles.serviceCardSubtitle}>Daily offerings & revenue share</Text>
+            </View>
+            <View style={styles.serviceBadgePill}>
+              <View style={styles.pulseDot} />
+              <Text style={styles.serviceBadgeText}>4 Active Services</Text>
+            </View>
+          </View>
+
+          {/* Pie Chart & Interactive Breakdown */}
+          <View style={styles.pieChartContainer}>
+            <View style={styles.pieSvgWrapper}>
+              <Svg width={140} height={140} viewBox="0 0 160 160">
+                {SERVICE_TYPES.map(item => {
+                  const isSelected = selectedService === item.id;
+                  const isAnySelected = selectedService !== null;
+                  return (
+                    <Path
+                      key={item.id}
+                      d={getPieSlice(80, 80, 68, item.startPct, item.endPct)}
+                      fill={item.color}
+                      opacity={!isAnySelected || isSelected ? 1 : 0.35}
+                      stroke="#ffffff"
+                      strokeWidth="2.5"
+                      onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
+                    />
+                  );
+                })}
+
+                {/* Center Badge Hole */}
+                <Circle cx="80" cy="80" r="32" fill="#ffffff" stroke="#edf0f5" strokeWidth="1.5" />
+                <SvgText
+                  x="80"
+                  y="77"
+                  textAnchor="middle"
+                  fill="#111318"
+                  fontSize="13"
+                  fontFamily={Fonts.bold}
+                >
+                  {selectedServiceItem ? `${selectedServiceItem.percent}%` : '100%'}
+                </SvgText>
+                <SvgText
+                  x="80"
+                  y="90"
+                  textAnchor="middle"
+                  fill="#8e95a2"
+                  fontSize="8.5"
+                  fontFamily={Fonts.medium}
+                >
+                  {selectedServiceItem ? selectedServiceItem.shortName : 'Total'}
+                </SvgText>
+              </Svg>
+            </View>
+
+            {/* Right Legend */}
+            <View style={styles.pieLegendCol}>
+              {SERVICE_TYPES.map(item => {
+                const isSelected = selectedService === item.id;
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[styles.legendRowItem, isSelected && styles.legendRowItemSelected]}
+                    onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={[styles.legendColorBox, { backgroundColor: item.color }]} />
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text
+                        style={[styles.legendItemName, isSelected && { color: item.color, fontFamily: Fonts.bold }]}
+                        numberOfLines={1}
+                      >
+                        {item.name}
+                      </Text>
+                      <Text style={styles.legendItemSub}>{item.details}</Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end', marginLeft: 6 }}>
+                      <Text style={styles.legendItemPercent}>{item.percent}%</Text>
+                      <Text style={styles.legendItemAmount}>{item.amount}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Bottom Quick Chips */}
+          <View style={styles.serviceTypesFooterRow}>
+            {SERVICE_TYPES.map(item => {
+              const isSelected = selectedService === item.id;
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[
+                    styles.serviceMiniStatPill,
+                    isSelected && { borderColor: item.color, backgroundColor: `${item.color}15` }
+                  ]}
+                  onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.serviceMiniDot, { backgroundColor: item.color }]} />
+                  <Text style={[styles.serviceMiniStatLabel, isSelected && { color: item.color, fontFamily: Fonts.bold }]}>
+                    {item.shortName}
+                  </Text>
+                  <Text style={[styles.serviceMiniStatVal, { color: item.color }]}>{item.percent}%</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -544,7 +705,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
-    marginBottom: 16,
     marginTop: 2,
   },
   surgeBadge: {
@@ -567,32 +727,140 @@ const styles = StyleSheet.create({
     color: '#8e95a2',
     flexShrink: 1,
   },
-  heroActionButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: '#f8fafc',
+  // Service Types Card
+  sectionHeading: {
+    fontSize: 13,
+    fontFamily: Fonts.semiBold,
+    color: '#8e95a2',
+    marginBottom: 10,
+    marginLeft: 4,
   },
-  heroActionCol: {
+  serviceTypesCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#edf0f5',
+    marginBottom: 16,
+  },
+  serviceCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  serviceCardTitle: {
+    fontSize: 15,
+    fontFamily: Fonts.bold,
+    color: '#111318',
+  },
+  serviceCardSubtitle: {
+    fontSize: 11.5,
+    fontFamily: Fonts.regular,
+    color: '#8e95a2',
+    marginTop: 2,
+  },
+  serviceBadgePill: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    backgroundColor: '#ecfdf5',
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 9999,
   },
-  heroRoundBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#111318',
+  serviceBadgeText: {
+    fontSize: 11,
+    fontFamily: Fonts.semiBold,
+    color: '#059669',
+  },
+  pieChartContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  pieSvgWrapper: {
+    width: 140,
+    height: 140,
     alignItems: 'center',
     justifyContent: 'center',
-    // NO drop shadows
-    shadowOpacity: 0,
-    elevation: 0,
   },
-  heroActionLabel: {
+  pieLegendCol: {
+    flex: 1,
+    gap: 6,
+  },
+  legendRowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+  },
+  legendRowItemSelected: {
+    backgroundColor: '#f8fafc',
+  },
+  legendColorBox: {
+    width: 10,
+    height: 10,
+    borderRadius: 3,
+  },
+  legendItemName: {
     fontSize: 12,
     fontFamily: Fonts.semiBold,
     color: '#111318',
+  },
+  legendItemSub: {
+    fontSize: 10,
+    fontFamily: Fonts.regular,
+    color: '#8e95a2',
+    marginTop: 1,
+  },
+  legendItemPercent: {
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+    color: '#111318',
+  },
+  legendItemAmount: {
+    fontSize: 10,
+    fontFamily: Fonts.regular,
+    color: '#8e95a2',
+    marginTop: 1,
+  },
+  serviceTypesFooterRow: {
+    flexDirection: 'row',
+    gap: 6,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f4f9',
+  },
+  serviceMiniStatPill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#f1f4f9',
+    backgroundColor: '#f8fafc',
+  },
+  serviceMiniDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  serviceMiniStatLabel: {
+    fontSize: 10,
+    fontFamily: Fonts.medium,
+    color: '#64748b',
+  },
+  serviceMiniStatVal: {
+    fontSize: 10.5,
+    fontFamily: Fonts.bold,
   },
   // Side by side cards
   kpiTwinRow: {
