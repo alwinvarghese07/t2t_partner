@@ -21,6 +21,7 @@ import Svg, {
   Line,
   LinearGradient,
   Path,
+  Rect,
   Stop,
   Text as SvgText
 } from 'react-native-svg';
@@ -29,108 +30,85 @@ const SERVICE_TYPES = [
   {
     id: 'accommodation',
     name: 'Accommodation',
-    shortName: 'Stay',
-    pieLabel: 'Accommodation',
     percent: 54,
-    startPct: 0,
-    endPct: 54,
-    amount: '₹24,375',
-    details: '10 Active Units',
-    desc: 'Standard Double, Deluxe AC & Family Suites',
-    color: '#f97316',
-    labelFactor: 0.62,
-    fontSize: 12.5,
-    percentSize: 14,
-    icon: 'bed-outline' as const,
+    startDeg: -87.75,
+    endDeg: 96.1,
+    textX: 249.5,
+    textY: 146,
+    badgeX: 230,
+    badgeY: 127.5,
+    color: '#ea580c',
+    textColor: '#ffffff',
+    hasBadge: true,
   },
   {
     id: 'darshan',
     name: 'Darshan Packages',
-    shortName: 'Darshan',
-    pieLabel: 'Darshan',
     percent: 24,
-    startPct: 54,
-    endPct: 78,
-    amount: '₹10,800',
-    details: '3 Tour Circuits',
-    desc: 'VIP Tirumala Darshan & Pilgrim Sightseeing',
-    color: '#7c3aed',
-    labelFactor: 0.62,
-    fontSize: 12,
-    percentSize: 13,
-    icon: 'sparkles-outline' as const,
+    startDeg: 101.1,
+    endDeg: 182.7,
+    textX: 89.2,
+    textY: 195,
+    color: '#fed7aa',
+    textColor: '#78350f',
+    hasBadge: false,
   },
   {
     id: 'transit',
     name: 'Transit & Cabs',
-    shortName: 'Transit',
-    pieLabel: 'Transit',
     percent: 14,
-    startPct: 78,
-    endPct: 92,
-    amount: '₹6,300',
-    details: 'Hill Ghat Taxis',
-    desc: 'Station/Airport Pickups & Tirumala Ghat link',
-    color: '#0284c7',
-    labelFactor: 0.66,
-    fontSize: 11,
-    percentSize: 12,
-    icon: 'car-outline' as const,
+    startDeg: 187.7,
+    endDeg: 235.3,
+    textX: 83.3,
+    textY: 92.5,
+    color: '#fce7f3',
+    textColor: '#831843',
+    hasBadge: false,
   },
   {
     id: 'pooja',
     name: 'Pooja & Seva',
-    shortName: 'Pooja',
-    pieLabel: 'Pooja',
     percent: 8,
-    startPct: 92,
-    endPct: 100,
-    amount: '₹3,600',
-    details: 'Special Sevas',
-    desc: 'Suprabhatham & Special Darshan assistance',
-    color: '#10b981',
-    labelFactor: 0.72,
-    fontSize: 10.5,
-    percentSize: 11.5,
-    icon: 'flower-outline' as const,
+    startDeg: 240.3,
+    endDeg: 267.5,
+    textX: 135.0,
+    textY: 53,
+    color: '#e0e7ff',
+    textColor: '#1e3a8a',
+    hasBadge: false,
   },
 ];
 
-const getPieSlice = (cx: number, cy: number, r: number, startPct: number, endPct: number) => {
-  const startAngle = (startPct / 100) * 360 - 90;
-  const endAngle = (endPct / 100) * 360 - 90;
+const getDonutSlicePath = (
+  cx: number,
+  cy: number,
+  rIn: number,
+  rOut: number,
+  startDeg: number,
+  endDeg: number
+) => {
+  const startRad = (startDeg * Math.PI) / 180;
+  const endRad = (endDeg * Math.PI) / 180;
 
-  const startRad = (startAngle * Math.PI) / 180;
-  const endRad = (endAngle * Math.PI) / 180;
+  const xOutStart = cx + rOut * Math.cos(startRad);
+  const yOutStart = cy + rOut * Math.sin(startRad);
+  const xOutEnd = cx + rOut * Math.cos(endRad);
+  const yOutEnd = cy + rOut * Math.sin(endRad);
 
-  const x1 = cx + r * Math.cos(startRad);
-  const y1 = cy + r * Math.sin(startRad);
-  const x2 = cx + r * Math.cos(endRad);
-  const y2 = cy + r * Math.sin(endRad);
+  const xInEnd = cx + rIn * Math.cos(endRad);
+  const yInEnd = cy + rIn * Math.sin(endRad);
+  const xInStart = cx + rIn * Math.cos(startRad);
+  const yInStart = cy + rIn * Math.sin(startRad);
 
-  const largeArcFlag = endPct - startPct > 50 ? 1 : 0;
+  const largeArcFlag = endDeg - startDeg > 180 ? 1 : 0;
 
-  return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
-};
-
-const getSliceOffset = (startPct: number, endPct: number, distance: number) => {
-  const midPct = (startPct + endPct) / 2;
-  const midAngle = (midPct / 100) * 360 - 90;
-  const midRad = (midAngle * Math.PI) / 180;
-  return {
-    x: Math.round(distance * Math.cos(midRad)),
-    y: Math.round(distance * Math.sin(midRad)),
-  };
-};
-
-const getSliceLabelPos = (cx: number, cy: number, r: number, startPct: number, endPct: number, factor = 0.65) => {
-  const midPct = (startPct + endPct) / 2;
-  const midAngle = (midPct / 100) * 360 - 90;
-  const midRad = (midAngle * Math.PI) / 180;
-  return {
-    x: Math.round(cx + r * factor * Math.cos(midRad)),
-    y: Math.round(cy + r * factor * Math.sin(midRad)),
-  };
+  return [
+    `M ${xOutStart.toFixed(2)} ${yOutStart.toFixed(2)}`,
+    `A ${rOut} ${rOut} 0 ${largeArcFlag} 1 ${xOutEnd.toFixed(2)} ${yOutEnd.toFixed(2)}`,
+    `L ${xInEnd.toFixed(2)} ${yInEnd.toFixed(2)}`,
+    `A ${rIn} ${rIn} 0 ${largeArcFlag} 0 ${xInStart.toFixed(2)} ${yInStart.toFixed(2)}`,
+    'Z'
+  ].join(' ');
 };
 
 export default function DashboardScreen() {
@@ -139,9 +117,6 @@ export default function DashboardScreen() {
   const { property, bookings, inventory, notifications, toggleInventory } = usePortal();
 
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState<'Oct 2026' | 'All Time'>('Oct 2026');
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-
-  const selectedServiceItem = SERVICE_TYPES.find(s => s.id === selectedService);
 
   const totalBalance = bookings.reduce((sum, item) => sum + item.amount, 0);
   const pendingCount = bookings.filter(b => b.status === 'Pending Confirmation').length;
@@ -389,139 +364,83 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Service Types Section with Full-Size Pie Chart */}
+        {/* Service Types Section with Styled Donut Pie Chart */}
         <View style={styles.serviceTypesCard}>
           <View style={styles.serviceCardHeader}>
             <View>
               <Text style={styles.serviceCardTitle}>Service Distribution</Text>
-              <Text style={styles.serviceCardSubtitle}>Daily offerings & revenue share</Text>
-            </View>
-            <View style={styles.serviceBadgePill}>
-              <View style={styles.pulseDot} />
-              <Text style={styles.serviceBadgeText}>4 Active Services</Text>
+              <Text style={styles.serviceCardSubtitle}>Daily offerings & portfolio share</Text>
             </View>
           </View>
 
-          {/* Interactive Tooltip Card */}
-          {selectedServiceItem ? (
-            <View style={styles.pieTooltipCard}>
-              <View style={styles.pieTooltipHeader}>
-                <View style={styles.pieTooltipTitleRow}>
-                  <View style={[styles.pieTooltipDot, { backgroundColor: selectedServiceItem.color }]} />
-                  <Text style={styles.pieTooltipTitle}>{selectedServiceItem.name}</Text>
-                  <View style={[styles.pieTooltipPill, { backgroundColor: `${selectedServiceItem.color}18` }]}>
-                    <Text style={[styles.pieTooltipPillText, { color: selectedServiceItem.color }]}>
-                      {selectedServiceItem.percent}% Share
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setSelectedService(null)}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons name="close-circle" size={20} color="#94a3b8" />
-                </TouchableOpacity>
-              </View>
+          {/* Donut Chart matching reference style */}
+          <View style={styles.donutSvgWrapper}>
+            <Svg width="100%" height={270} viewBox="0 0 320 270">
+              {SERVICE_TYPES.map(item => (
+                <Path
+                  key={item.id}
+                  d={getDonutSlicePath(160, 135, 66, 114, item.startDeg, item.endDeg)}
+                  fill={item.color}
+                  stroke={item.color}
+                  strokeWidth="8"
+                  strokeLinejoin="round"
+                />
+              ))}
 
-              <Text style={styles.pieTooltipDesc}>{selectedServiceItem.desc}</Text>
-
-              <View style={styles.pieTooltipMetricsRow}>
-                <View style={styles.pieTooltipMetric}>
-                  <Text style={styles.pieTooltipMetricLabel}>REVENUE</Text>
-                  <Text style={styles.pieTooltipMetricVal}>{selectedServiceItem.amount}</Text>
-                </View>
-                <View style={styles.pieTooltipDivider} />
-                <View style={styles.pieTooltipMetric}>
-                  <Text style={styles.pieTooltipMetricLabel}>INVENTORY</Text>
-                  <Text style={styles.pieTooltipMetricVal}>{selectedServiceItem.details}</Text>
-                </View>
-                <View style={styles.pieTooltipDivider} />
-                <View style={styles.pieTooltipMetric}>
-                  <Text style={styles.pieTooltipMetricLabel}>PORTFOLIO</Text>
-                  <Text style={[styles.pieTooltipMetricVal, { color: selectedServiceItem.color }]}>
-                    {selectedServiceItem.percent}%
-                  </Text>
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.pieHintPill}>
-              <Ionicons name="finger-print-outline" size={13} color="#64748b" />
-              <Text style={styles.pieHintText}>Tap any slice to inspect details & breakdown</Text>
-            </View>
-          )}
-
-          {/* Full Size Pie Chart with Slices and Names on Pie */}
-          <View style={styles.fullPieSvgWrapper}>
-            <Svg width="100%" height={290} viewBox="0 0 320 290">
+              {/* Percentage labels inside each slice */}
               {SERVICE_TYPES.map(item => {
-                const isSelected = selectedService === item.id;
-                const isAnySelected = selectedService !== null;
-                const offset = isSelected ? getSliceOffset(item.startPct, item.endPct, 8) : { x: 0, y: 0 };
-                const labelPos = getSliceLabelPos(160, 145, 120, item.startPct, item.endPct, item.labelFactor);
+                if (item.hasBadge) {
+                  return (
+                    <G key={`text-${item.id}`}>
+                      {/* Black squircle badge like in the reference image */}
+                      <Rect
+                        x={item.badgeX}
+                        y={item.badgeY}
+                        width={39}
+                        height={28}
+                        rx={8}
+                        ry={8}
+                        fill="#111318"
+                      />
+                      <SvgText
+                        x={item.textX}
+                        y={item.textY}
+                        textAnchor="middle"
+                        fill="#ffffff"
+                        fontSize="13"
+                        fontFamily={Fonts.bold}
+                      >
+                        {item.percent}%
+                      </SvgText>
+                    </G>
+                  );
+                }
 
                 return (
-                  <G
-                    key={item.id}
-                    transform={`translate(${offset.x}, ${offset.y})`}
-                    onPress={() => setSelectedService(prev => prev === item.id ? null : item.id)}
+                  <SvgText
+                    key={`text-${item.id}`}
+                    x={item.textX}
+                    y={item.textY}
+                    textAnchor="middle"
+                    fill={item.textColor}
+                    fontSize="13"
+                    fontFamily={Fonts.bold}
                   >
-                    <Path
-                      d={getPieSlice(160, 145, 120, item.startPct, item.endPct)}
-                      fill={item.color}
-                      opacity={!isAnySelected || isSelected ? 1 : 0.45}
-                      stroke="#ffffff"
-                      strokeWidth="2.5"
-                    />
-
-                    {/* Service Name & Percentage directly on Pie */}
-                    <SvgText
-                      x={labelPos.x}
-                      y={labelPos.y - 4}
-                      textAnchor="middle"
-                      fill="#ffffff"
-                      fontSize={item.fontSize}
-                      fontFamily={Fonts.bold}
-                    >
-                      {item.pieLabel}
-                    </SvgText>
-                    <SvgText
-                      x={labelPos.x}
-                      y={labelPos.y + 12}
-                      textAnchor="middle"
-                      fill="#ffffff"
-                      fontSize={item.percentSize}
-                      fontFamily={Fonts.bold}
-                    >
-                      {item.percent}%
-                    </SvgText>
-                  </G>
+                    {item.percent}%
+                  </SvgText>
                 );
               })}
-
-              {/* Center Hub */}
-              <Circle cx="160" cy="145" r="28" fill="#ffffff" stroke="#f1f4f9" strokeWidth="2" />
-              <SvgText
-                x="160"
-                y="142"
-                textAnchor="middle"
-                fill="#111318"
-                fontSize="12.5"
-                fontFamily={Fonts.bold}
-              >
-                {selectedServiceItem ? `${selectedServiceItem.percent}%` : '100%'}
-              </SvgText>
-              <SvgText
-                x="160"
-                y="153"
-                textAnchor="middle"
-                fill="#8e95a2"
-                fontSize="8"
-                fontFamily={Fonts.medium}
-              >
-                {selectedServiceItem ? selectedServiceItem.shortName : 'Total'}
-              </SvgText>
             </Svg>
+          </View>
+
+          {/* Bottom Color Blocks with Service Names */}
+          <View style={styles.legendGrid}>
+            {SERVICE_TYPES.map(item => (
+              <View key={item.id} style={styles.legendBlockItem}>
+                <View style={[styles.legendColorSquare, { backgroundColor: item.color }]} />
+                <Text style={styles.legendBlockName}>{item.name}</Text>
+              </View>
+            ))}
           </View>
         </View>
 
@@ -821,117 +740,37 @@ const styles = StyleSheet.create({
     color: '#8e95a2',
     marginTop: 2,
   },
-  serviceBadgePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#ecfdf5',
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 9999,
-  },
-  serviceBadgeText: {
-    fontSize: 11,
-    fontFamily: Fonts.semiBold,
-    color: '#059669',
-  },
-  fullPieSvgWrapper: {
+  donutSvgWrapper: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 6,
+    marginVertical: 4,
   },
-  pieTooltipCard: {
-    backgroundColor: '#f8fafc',
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 4,
-  },
-  pieTooltipHeader: {
+  legendGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 8,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f4f9',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
   },
-  pieTooltipTitleRow: {
+  legendBlockItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    width: '46%',
   },
-  pieTooltipDot: {
-    width: 8,
-    height: 8,
+  legendColorSquare: {
+    width: 14,
+    height: 14,
     borderRadius: 4,
   },
-  pieTooltipTitle: {
-    fontSize: 13.5,
-    fontFamily: Fonts.bold,
-    color: '#111318',
-  },
-  pieTooltipPill: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 9999,
-  },
-  pieTooltipPillText: {
-    fontSize: 10.5,
-    fontFamily: Fonts.bold,
-  },
-  pieTooltipDesc: {
-    fontSize: 11,
-    fontFamily: Fonts.regular,
-    color: '#64748b',
-    marginBottom: 8,
-  },
-  pieTooltipMetricsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#edf2f7',
-  },
-  pieTooltipMetric: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  pieTooltipMetricLabel: {
-    fontSize: 9,
-    fontFamily: Fonts.bold,
-    color: '#94a3b8',
-    letterSpacing: 0.5,
-  },
-  pieTooltipMetricVal: {
+  legendBlockName: {
     fontSize: 12.5,
-    fontFamily: Fonts.bold,
-    color: '#111318',
-    marginTop: 2,
-  },
-  pieTooltipDivider: {
-    width: 1,
-    height: 20,
-    backgroundColor: '#e2e8f0',
-  },
-  pieHintPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    backgroundColor: '#f8fafc',
-    borderRadius: 9999,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: '#edf0f5',
-    marginBottom: 6,
-    alignSelf: 'center',
-  },
-  pieHintText: {
-    fontSize: 11,
     fontFamily: Fonts.medium,
-    color: '#64748b',
+    color: '#334155',
   },
   // Side by side cards
   kpiTwinRow: {
