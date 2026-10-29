@@ -134,12 +134,7 @@ export default function LoginScreen() {
     });
   };
 
-  const handleDemoOtpFill = () => {
-    setOtp('816024');
-    handleVerifyOtp('816024');
-  };
-
-  const handleSocialAuth = (provider: 'Google' | 'Facebook') => {
+  const handleSocialAuth = (_provider: 'Google' | 'Facebook') => {
     setOtp('');
     setCountdown(45);
     setStep('otp');
@@ -156,12 +151,6 @@ export default function LoginScreen() {
       primaryButtonText: 'Send Reset Link',
       secondaryButtonText: 'Cancel'
     });
-  };
-
-  const handleDemoCredentialsFill = () => {
-    setEmail('partner@trip2tirupati.com');
-    setPassword('partner8160#');
-    setRememberMe(true);
   };
 
   const dynamicTopInset = Math.max(insets.top, Platform.OS === 'ios' ? 44 : 20);
@@ -234,22 +223,22 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* Floating White Card Form Container */}
-      <KeyboardAvoidingView
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          style={styles.cardScrollView}
-          contentContainerStyle={[
-            styles.cardScrollContent,
-            { paddingBottom: Math.max(insets.bottom, 24) + 16 }
-          ]}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-          keyboardShouldPersistTaps="handled"
+      {/* Floating White Block sticking to bottom */}
+      <View style={styles.whiteBottomCard}>
+        <KeyboardAvoidingView
+          style={styles.keyboardContainer}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <View style={styles.whiteCard}>
+          <ScrollView
+            style={styles.cardScrollView}
+            contentContainerStyle={[
+              styles.cardScrollContent,
+              { paddingBottom: Math.max(insets.bottom, 24) + 16 }
+            ]}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+          >
             {step === 'credentials' ? (
               /* ================= CREDENTIALS STEP ================= */
               <>
@@ -451,16 +440,6 @@ export default function LoginScreen() {
                     <Text style={styles.socialBtnText}>Facebook</Text>
                   </TouchableOpacity>
                 </View>
-
-                {/* 1-Tap Demo Credentials Helper */}
-                <TouchableOpacity
-                  style={styles.demoFillPill}
-                  onPress={handleDemoCredentialsFill}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="sparkles" size={13} color="#5f876f" />
-                  <Text style={styles.demoFillText}>Auto-fill Verified Partner Credentials</Text>
-                </TouchableOpacity>
               </>
             ) : (
               /* ================= OTP VERIFICATION STEP ================= */
@@ -579,16 +558,6 @@ export default function LoginScreen() {
                   <Text style={styles.primaryAuthButtonText}>Verify & Enter Portal</Text>
                 </TouchableOpacity>
 
-                {/* 1-Tap Demo OTP Auto-fill */}
-                <TouchableOpacity
-                  style={styles.demoFillPill}
-                  onPress={handleDemoOtpFill}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="sparkles" size={13} color="#5f876f" />
-                  <Text style={styles.demoFillText}>Auto-fill Demo Code (816024)</Text>
-                </TouchableOpacity>
-
                 {/* Secondary Option: Back to Login */}
                 <TouchableOpacity
                   style={styles.otpBackActionBtn}
@@ -600,14 +569,9 @@ export default function LoginScreen() {
                 </TouchableOpacity>
               </>
             )}
-
-            {/* Bottom Footer Note */}
-            <Text style={styles.footerLegal}>
-              Trip2Tirupati Partner Network · AP-TPT-8160 Secure Authentication
-            </Text>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }
@@ -657,32 +621,29 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     marginTop: 2,
   },
-  keyboardContainer: {
-    flex: 1,
-    backgroundColor: '#0a0d14',
-  },
-  cardScrollView: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  cardScrollContent: {
-    flexGrow: 1,
-    justifyContent: 'flex-start',
-  },
-  whiteCard: {
+  whiteBottomCard: {
     flex: 1,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  keyboardContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  cardScrollView: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  cardScrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 22,
     paddingTop: 24,
     maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-    shadowOpacity: 0,
-    elevation: 0,
   },
   segmentContainer: {
     flexDirection: 'row',
@@ -850,33 +811,6 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontFamily: Fonts.semiBold,
     color: '#111318',
-  },
-  demoFillPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    backgroundColor: '#f0fdf4',
-    borderWidth: 1,
-    borderColor: '#dcfce7',
-    borderRadius: 9999,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginTop: 18,
-    alignSelf: 'center',
-  },
-  demoFillText: {
-    fontSize: 12,
-    fontFamily: Fonts.semiBold,
-    color: '#15803d',
-  },
-  footerLegal: {
-    fontSize: 11,
-    fontFamily: Fonts.regular,
-    color: '#94a3b8',
-    textAlign: 'center',
-    marginTop: 18,
-    lineHeight: 16,
   },
 
   /* ===== OTP SPECIFIC STYLES ===== */
